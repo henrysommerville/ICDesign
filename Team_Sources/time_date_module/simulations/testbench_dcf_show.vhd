@@ -118,13 +118,14 @@ check : process
             
         wait until rising_edge(de_set);
         wait until rising_edge(clk_10k);
+        wait until rising_edge(clk_10k);
         assert td_dcf_show ='1'
             report "td_dcf_show invalid after synch" 
             severity error;
         
         wait until rising_edge(reset);
         wait until rising_edge(clk_10k);
-        
+        wait until rising_edge(clk_10k);
         assert td_dcf_show ='0'
             report "td_dcf_show invalid after reset" 
             severity error;

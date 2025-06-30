@@ -45,29 +45,30 @@ architecture Behavioral of time_date_counter_date is
 
 signal internal_date_counter : unsigned(14 downto 0) := to_unsigned(1,15);
 signal internal_date_counter_active : STD_LOGIC := '0';
+signal reset_prev : std_logic := '0';
 
 begin
     
     td_date_status <= internal_date_counter_active;
-    process(clk_10k, mode_date, reset)
+    process(clk_10k)
     begin
-        if rising_edge(reset) then
-            internal_date_counter_active <= '0';
-            internal_date_counter <= to_unsigned(1,internal_date_counter'length);
-        elsif internal_date_counter_active = '1' and rising_edge(clk_10k) then
-
-            if internal_date_counter = to_unsigned(30000,internal_date_counter'length) then
-                internal_date_counter <= to_unsigned(1,internal_date_counter'length);
+        if rising_edge(clk_10k) then
+            if reset = '1' and reset_prev = '0' then
                 internal_date_counter_active <= '0';
-            else
-                internal_date_counter <= internal_date_counter + 1;
+                internal_date_counter <= to_unsigned(1,internal_date_counter'length);
+            elsif internal_date_counter_active = '1' then
+                if internal_date_counter = to_unsigned(30000,internal_date_counter'length) then
+                    internal_date_counter <= to_unsigned(1,internal_date_counter'length);
+                    internal_date_counter_active <= '0';
+                else
+                    internal_date_counter <= internal_date_counter + 1;
+                end if;
+                
+            elsif mode_date = '1' and internal_date_counter_active = '0' then
+                internal_date_counter_active <= '1';
             end if;
-            
-        elsif rising_edge(mode_date) and internal_date_counter_active = '0' then
-            internal_date_counter_active <= '1';
+            reset_prev <= reset;
         end if;
-
-        
         
 
    end process;

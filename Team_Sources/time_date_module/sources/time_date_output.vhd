@@ -52,7 +52,8 @@ entity time_date_output is
         td_month : out  STD_LOGIC_VECTOR (4 downto 0);
         td_year : out  STD_LOGIC_VECTOR (7 downto 0);
         td_hour : out  STD_LOGIC_VECTOR (5 downto 0);
-        td_min : out  STD_LOGIC_VECTOR (6 downto 0)
+        td_min : out  STD_LOGIC_VECTOR (6 downto 0);
+        td_sec : out  STD_LOGIC_VECTOR (6 downto 0)
     );
 end time_date_output;
 
@@ -87,10 +88,18 @@ signal internal_year : STD_LOGIC_VECTOR(7 downto 0):= bcd_1;
 signal internal_hour : STD_LOGIC_VECTOR(7 downto 0):= bcd_0;
 signal internal_min : STD_LOGIC_VECTOR(7 downto 0):= bcd_0;
 
+signal internal_clock_counter : unsigned(13 downto 0) := to_unsigned(1,14);
+signal internal_second_counter : STD_LOGIC_VECTOR(7 downto 0) := bcd_0;
+
 signal leap_year : boolean;
 signal even_month : boolean; 
 signal below_august : boolean;
 signal is_februar : boolean;
+
+signal reset_prev : std_logic := '0';
+signal de_set_prev : std_logic := '0';
+signal min_finished_prev : std_logic := '0';
+
 begin
 
 td_dow <= internal_dow(2 downto 0);
@@ -99,85 +108,109 @@ td_month <= internal_month(4 downto 0);
 td_year <= internal_year(7 downto 0);
 td_hour <= internal_hour(5 downto 0);
 td_min <= internal_min(6 downto 0);
+td_sec <= internal_second_counter(6 downto 0);
 
-process(reset,de_set, min_finished)
-begin
-    if rising_edge(reset) then
-        td_dcf_show <= '0';
-    elsif rising_edge(de_set)then
-        td_dcf_show <= '1';
-    elsif rising_edge(min_finished) then
-        td_dcf_show <= '0';
-    end if;
-end process;
 
-process(min_finished,de_set,reset)
+process(clk_10k)
 begin
-    if rising_edge(reset) then 
-        internal_dow <= bcd_0;
-        internal_day <= bcd_1;
-        internal_month <= bcd_1;
-        internal_year <= bcd_1;
-        internal_hour<= bcd_0;
-        internal_min <= bcd_0;
-    elsif rising_edge(de_set) then
-        internal_dow(2 downto 0) <= de_dow;
-        internal_day(5 downto 0) <= de_day;
-        internal_month(4 downto 0) <= de_month;
-        internal_year(7 downto 0) <= de_year;
-        internal_hour(5 downto 0) <= de_hour;
-        internal_min(6 downto 0) <= de_min;
-    elsif rising_edge(min_finished) then
-        if internal_min = bcd_59 then
+    if rising_edge(clk_10K) then
+        if reset = '1' and reset_prev = '0' then 
+            td_dcf_show <= '0';
+            
+            internal_clock_counter <= to_unsigned(1,internal_clock_counter'length);
+            internal_second_counter <= bcd_0;
+            
+            internal_dow <= bcd_0;
+            internal_day <= bcd_1;
+            internal_month <= bcd_1;
+            internal_year <= bcd_1;
+            internal_hour<= bcd_0;
             internal_min <= bcd_0;
-            if internal_hour = bcd_23 then
-                internal_hour <= bcd_0;
-                if internal_dow = bcd_6 then
-                    internal_dow <= bcd_0;
-                else
-                    internal_dow <= increment_bcd(internal_dow);
-                end if;
-                
-                leap_year <= check_leap_year(internal_year);
-                even_month <= (internal_month(0) = '0');
-                below_august <=(unsigned(internal_month) < unsigned(bcd_8));
-                is_februar  <= (internal_month = bcd_2);
-                                
-                if
-                    (below_august and not even_month and (internal_day = bcd_31)) or
-                    (not below_august and even_month and (internal_day = bcd_31)) or
-                    (not below_august and not even_month and (internal_day = bcd_30)) or
-                    (below_august and even_month and not is_februar and (internal_day = bcd_30)) or
-                    (is_februar and not leap_year and (internal_day = bcd_28)) or
-                    (is_februar and leap_year and (internal_day = bcd_29))
-                    then 
-                    internal_day <= bcd_1;
-                    
-                    if internal_month = bcd_12 then
-                        internal_month <= bcd_1;
-                        
-                        if internal_year = bcd_99 then
-                            internal_year <= bcd_1;
-                        else
-                            internal_year <= increment_bcd(internal_year);
-                        end if;
-                        
-                    else
-                        internal_month <= increment_bcd(internal_month);
-                    end if;
-                
-                else
-                    internal_day <= increment_bcd(internal_day);  
-                end if;
-                                
-            else
-                internal_hour <= increment_bcd(internal_hour);
-            end if;
+        elsif de_set = '1' and de_set_prev = '0' then
+            td_dcf_show <= '1';
+            
+            internal_clock_counter <= to_unsigned(1,internal_clock_counter'length);
+            internal_second_counter <= bcd_0;
+            
+            internal_dow(2 downto 0) <= de_dow;
+            internal_day(5 downto 0) <= de_day;
+            internal_month(4 downto 0) <= de_month;
+            internal_year(7 downto 0) <= de_year;
+            internal_hour(5 downto 0) <= de_hour;
+            internal_min(6 downto 0) <= de_min;
         else
-            internal_min <= increment_bcd(internal_min);
+            if internal_clock_counter =  to_unsigned(10000,internal_clock_counter'length) then
+                        if internal_second_counter = bcd_59 then
+                            internal_clock_counter <= to_unsigned(1,internal_clock_counter'length);
+                            internal_second_counter <= bcd_0;
+                            
+                            td_dcf_show <= '0';
+            
+                           if internal_min = bcd_59 then
+                                internal_min <= bcd_0;
+                                if internal_hour = bcd_23 then
+                                    internal_hour <= bcd_0;
+                                    if internal_dow = bcd_6 then
+                                        internal_dow <= bcd_0;
+                                    else
+                                        internal_dow <= increment_bcd(internal_dow);
+                                    end if;
+                                    
+                                    leap_year <= check_leap_year(internal_year);
+                                    even_month <= (internal_month(0) = '0');
+                                    below_august <=(unsigned(internal_month) < unsigned(bcd_8));
+                                    is_februar  <= (internal_month = bcd_2);
+                                                    
+                                    if
+                                        (below_august and not even_month and (internal_day = bcd_31)) or
+                                        (not below_august and even_month and (internal_day = bcd_31)) or
+                                        (not below_august and not even_month and (internal_day = bcd_30)) or
+                                        (below_august and even_month and not is_februar and (internal_day = bcd_30)) or
+                                        (is_februar and not leap_year and (internal_day = bcd_28)) or
+                                        (is_februar and leap_year and (internal_day = bcd_29))
+                                        then 
+                                        internal_day <= bcd_1;
+                                        
+                                        if internal_month = bcd_12 then
+                                            internal_month <= bcd_1;
+                                            
+                                            if internal_year = bcd_99 then
+                                                internal_year <= bcd_1;
+                                            else
+                                                internal_year <= increment_bcd(internal_year);
+                                            end if;
+                                            
+                                        else
+                                            internal_month <= increment_bcd(internal_month);
+                                        end if;
+                                    
+                                    else
+                                        internal_day <= increment_bcd(internal_day);  
+                                    end if;
+                                                    
+                                else
+                                    internal_hour <= increment_bcd(internal_hour);
+                                end if;
+                            else
+                                internal_min <= increment_bcd(internal_min);
+                            end if; 
+
+                        else
+                            internal_second_counter <= increment_bcd(internal_second_counter);
+                            internal_clock_counter <= to_unsigned(1,internal_clock_counter'length);
+                        end if;
+                    else
+                        internal_clock_counter <= internal_clock_counter + 1;        
+                    end if;
+       
         end if;
-    end if;
-    
+        
+        reset_prev <= reset;    
+        de_set_prev <= de_set;  
+        min_finished_prev <= min_finished;
+        
+    end if; 
+   
 end process;
 
 end Behavioral;

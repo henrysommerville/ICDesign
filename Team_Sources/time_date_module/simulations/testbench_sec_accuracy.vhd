@@ -110,6 +110,7 @@ stim : process
 check : process
     begin
         wait until rising_edge(de_set);
+        wait until rising_edge(clk_10k);
         start_time <= now;
         wait until (td_sec = "0000001");
         stop_time <= now;
@@ -121,6 +122,7 @@ check : process
         report "Delta Time after synch: " & time'image(stop_time - start_time);
         
         wait until rising_edge(de_set);
+        wait until rising_edge(clk_10k);
         start_time <= now;
         wait until (td_sec = "0000001");
         stop_time <= now;

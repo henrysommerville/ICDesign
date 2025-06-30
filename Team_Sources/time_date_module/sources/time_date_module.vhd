@@ -81,16 +81,10 @@ date_output : entity work.time_date_output
         td_month => td_month,
         td_year => td_year,
         td_hour => td_hour,
-        td_min => td_min
+        td_min => td_min,
+        td_sec => td_sec
     );
-counter : entity work.time_date_counter
-    PORT MAP(
-        de_set => de_set,
-        reset => reset,
-        clk_10K => clk_10K,
-        td_sec => td_sec,
-        min_finished => min_finished
-    );
+
 counter_date : entity work.time_date_counter_date
     PORT MAP(
         reset => reset,

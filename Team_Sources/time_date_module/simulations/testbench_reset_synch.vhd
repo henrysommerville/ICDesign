@@ -114,6 +114,7 @@ stim : process
 check : process
     begin
         wait until rising_edge(clk_10k);
+        wait until rising_edge(clk_10k);
         assert td_dow = "000" and
                 td_day = "000001" and
                 td_month = "00001" and
@@ -124,6 +125,7 @@ check : process
             severity error;
             
         wait until rising_edge(reset);
+        wait until rising_edge(clk_10k);
         wait until rising_edge(clk_10k);
         assert td_dow = "000" and
                 td_day = "000001" and
@@ -136,6 +138,7 @@ check : process
             
         wait until rising_edge(de_set);
         wait until rising_edge(clk_10k);
+        wait until rising_edge(clk_10k);
         assert td_dow = de_dow and
                 td_day = de_day and
                 td_month = de_month and
@@ -146,6 +149,7 @@ check : process
             severity error;
         
         wait until rising_edge(reset) and rising_edge(de_set);
+        wait until rising_edge(clk_10k);
         wait until rising_edge(clk_10k);
         assert td_dow = "000" and
                 td_day = "000001" and
