@@ -45,13 +45,13 @@ entity time_date_module is
         reset : in  STD_LOGIC;
         clk_10K : in STD_LOGIC;
         td_dcf_show: out STD_LOGIC;
-        td_dow : out  STD_LOGIC_VECTOR (2 downto 0);
-        td_day : out  STD_LOGIC_VECTOR (5 downto 0);
-        td_month : out  STD_LOGIC_VECTOR (4 downto 0);
+        td_dow : out  STD_LOGIC_VECTOR (7 downto 0);
+        td_day : out  STD_LOGIC_VECTOR (7 downto 0);
+        td_month : out  STD_LOGIC_VECTOR (7 downto 0);
         td_year : out  STD_LOGIC_VECTOR (7 downto 0);
-        td_hour : out  STD_LOGIC_VECTOR (5 downto 0);
-        td_min : out  STD_LOGIC_VECTOR (6 downto 0);
-        td_sec : out  STD_LOGIC_VECTOR (6 downto 0);
+        td_hour : out  STD_LOGIC_VECTOR (7 downto 0);
+        td_min : out  STD_LOGIC_VECTOR (7 downto 0);
+        td_sec : out  STD_LOGIC_VECTOR (7 downto 0);
         td_date_status : out STD_LOGIC
     );
 end time_date_module;

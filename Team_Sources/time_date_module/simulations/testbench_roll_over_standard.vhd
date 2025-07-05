@@ -51,13 +51,13 @@ signal de_min :  STD_LOGIC_VECTOR (6 downto 0):= "0000111";
 signal mode_date: STD_LOGIC := '0';
 signal clk_10K : STD_LOGIC := '0';
 signal td_dcf_show: STD_LOGIC;
-signal td_dow : STD_LOGIC_VECTOR (2 downto 0);
-signal td_day :  STD_LOGIC_VECTOR (5 downto 0);
-signal td_month : STD_LOGIC_VECTOR (4 downto 0);
+signal td_dow : STD_LOGIC_VECTOR (7 downto 0);
+signal td_day :  STD_LOGIC_VECTOR (7 downto 0);
+signal td_month : STD_LOGIC_VECTOR (7 downto 0);
 signal td_year : STD_LOGIC_VECTOR (7 downto 0);
-signal td_hour : STD_LOGIC_VECTOR (5 downto 0);
-signal td_min : STD_LOGIC_VECTOR (6 downto 0);
-signal td_sec : STD_LOGIC_VECTOR (6 downto 0);
+signal td_hour : STD_LOGIC_VECTOR (7 downto 0);
+signal td_min : STD_LOGIC_VECTOR (7 downto 0);
+signal td_sec : STD_LOGIC_VECTOR (7 downto 0);
 signal td_date_status : STD_LOGIC;
 
 signal temp_bcd : STD_LOGIC_VECTOR (7 downto 0);
@@ -187,60 +187,60 @@ check : process
         -- min
         wait until falling_edge(de_set);
         wait until falling_edge(clk_10k);
-        temp_bcd(6 downto 0) <= td_min;
-        wait until td_sec = bcd_59(6 downto 0);
-        assert temp_bcd(6 downto 0) = td_min
+        temp_bcd <= td_min;
+        wait until td_sec = bcd_59;
+        assert temp_bcd = td_min
             report "min to early"
             severity error;
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert temp_bcd(6 downto 0) = td_min and td_sec = bcd_0(6 downto 0)
+        assert temp_bcd = td_min and td_sec = bcd_0
             report "min to late" 
             severity error;
             
         -- hour
         wait until falling_edge(de_set);
         wait until falling_edge(clk_10k);
-        temp_bcd(5 downto 0) <= td_hour;
-        wait until td_sec = bcd_59(6 downto 0);
-        assert temp_bcd(5 downto 0) = td_hour 
+        temp_bcd <= td_hour;
+        wait until td_sec = bcd_59;
+        assert temp_bcd = td_hour 
             report "hour to early" 
             severity error;
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert temp_bcd(5 downto 0) = td_hour and td_min = bcd_0(6 downto 0)
+        assert temp_bcd = td_hour and td_min = bcd_0
             report "hour to late" 
             severity error;
             
         -- dow
         wait until falling_edge(de_set);
         wait until falling_edge(clk_10k);
-        temp_bcd(2 downto 0) <= td_dow;
-        wait until td_sec = bcd_59(6 downto 0);
-        assert temp_bcd(2 downto 0) = td_dow
+        temp_bcd <= td_dow;
+        wait until td_sec = bcd_59;
+        assert temp_bcd = td_dow
             report "dow to early" 
             severity error;
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert temp_bcd(2 downto 0) = td_dow and td_hour = bcd_0(5 downto 0)
+        assert temp_bcd = td_dow and td_hour = bcd_0
             report "dow to late" 
             severity error;
             
         -- day
         wait until falling_edge(de_set);
         wait until falling_edge(clk_10k);
-        temp_bcd(5 downto 0) <= td_day;
-        wait until td_sec = bcd_59(6 downto 0);
-        assert temp_bcd(5 downto 0) = td_day
+        temp_bcd <= td_day;
+        wait until td_sec = bcd_59;
+        assert temp_bcd = td_day
             report "day to early" 
             severity error;
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert temp_bcd(5 downto 0) = td_day and td_hour = bcd_0(5 downto 0)
+        assert temp_bcd = td_day and td_hour = bcd_0
             report "day to late" 
             severity error;
             
@@ -248,45 +248,45 @@ check : process
         -- month
         wait until falling_edge(de_set);
         wait until falling_edge(clk_10k);
-        temp_bcd(4 downto 0) <= td_month;
-        wait until td_sec = bcd_59(6 downto 0);
-        assert temp_bcd(4 downto 0) = td_month
+        temp_bcd <= td_month;
+        wait until td_sec = bcd_59;
+        assert temp_bcd = td_month
             report "month to early" 
             severity error;
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert temp_bcd(4 downto 0) = td_month and td_day = bcd_1(5 downto 0) 
+        assert temp_bcd = td_month and td_day = bcd_1
             report "month to late" 
             severity error;
             
         -- year
         wait until falling_edge(de_set);
         wait until falling_edge(clk_10k);
-        temp_bcd(7 downto 0) <= td_year;
+        temp_bcd <= td_year;
         wait until td_sec = bcd_59(6 downto 0);
-        assert temp_bcd(7 downto 0) = td_year
+        assert temp_bcd = td_year
             report "year to early" 
             severity error;
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert temp_bcd(7 downto 0) = td_year and td_month = bcd_1(4 downto 0) 
+        assert temp_bcd = td_year and td_month = bcd_1
             report "year to late" 
             severity error;
             
         -- century
         wait until falling_edge(de_set);
         wait until falling_edge(clk_10k);
-        temp_bcd(7 downto 0) <= td_year;
-        wait until td_sec = bcd_59(6 downto 0);
-        assert temp_bcd(7 downto 0) = td_year
+        temp_bcd <= td_year;
+        wait until td_sec = bcd_59;
+        assert temp_bcd = td_year
             report "century to early" 
             severity error;
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert bcd_1(7 downto 0)  = td_year and td_month = bcd_1(4 downto 0) 
+        assert bcd_1  = td_year and td_month = bcd_1
             report "century to late" 
             severity error;
        

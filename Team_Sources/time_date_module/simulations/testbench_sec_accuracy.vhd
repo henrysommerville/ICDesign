@@ -49,13 +49,13 @@ signal de_min :  STD_LOGIC_VECTOR (6 downto 0):= "0000111";
 signal mode_date: STD_LOGIC := '0';
 signal clk_10K : STD_LOGIC := '0';
 signal td_dcf_show: STD_LOGIC;
-signal td_dow : STD_LOGIC_VECTOR (2 downto 0);
-signal td_day :  STD_LOGIC_VECTOR (5 downto 0);
-signal td_month : STD_LOGIC_VECTOR (4 downto 0);
+signal td_dow : STD_LOGIC_VECTOR (7 downto 0);
+signal td_day :  STD_LOGIC_VECTOR (7 downto 0);
+signal td_month : STD_LOGIC_VECTOR (7 downto 0);
 signal td_year : STD_LOGIC_VECTOR (7 downto 0);
-signal td_hour : STD_LOGIC_VECTOR (5 downto 0);
-signal td_min : STD_LOGIC_VECTOR (6 downto 0);
-signal td_sec : STD_LOGIC_VECTOR (6 downto 0);
+signal td_hour : STD_LOGIC_VECTOR (7 downto 0);
+signal td_min : STD_LOGIC_VECTOR (7 downto 0);
+signal td_sec : STD_LOGIC_VECTOR (7 downto 0);
 signal td_date_status : STD_LOGIC;
 
 signal start_time: time;
@@ -112,7 +112,7 @@ check : process
         wait until rising_edge(de_set);
         wait until rising_edge(clk_10k);
         start_time <= now;
-        wait until (td_sec = "0000001");
+        wait until (td_sec = bcd_1);
         stop_time <= now;
         
         wait until rising_edge(clk_10k);  
@@ -124,7 +124,7 @@ check : process
         wait until rising_edge(de_set);
         wait until rising_edge(clk_10k);
         start_time <= now;
-        wait until (td_sec = "0000001");
+        wait until (td_sec = bcd_1);
         stop_time <= now;
         
         wait until rising_edge(clk_10k);  

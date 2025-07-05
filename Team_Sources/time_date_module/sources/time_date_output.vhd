@@ -47,13 +47,13 @@ entity time_date_output is
         reset : in STD_LOGIC;
         clk_10K : in STD_LOGIC;
         td_dcf_show: out STD_LOGIC;
-        td_dow : out  STD_LOGIC_VECTOR (2 downto 0);
-        td_day : out  STD_LOGIC_VECTOR (5 downto 0);
-        td_month : out  STD_LOGIC_VECTOR (4 downto 0);
+        td_dow : out  STD_LOGIC_VECTOR (7 downto 0);
+        td_day : out  STD_LOGIC_VECTOR (7 downto 0);
+        td_month : out  STD_LOGIC_VECTOR (7 downto 0);
         td_year : out  STD_LOGIC_VECTOR (7 downto 0);
-        td_hour : out  STD_LOGIC_VECTOR (5 downto 0);
-        td_min : out  STD_LOGIC_VECTOR (6 downto 0);
-        td_sec : out  STD_LOGIC_VECTOR (6 downto 0)
+        td_hour : out  STD_LOGIC_VECTOR (7 downto 0);
+        td_min : out  STD_LOGIC_VECTOR (7 downto 0);
+        td_sec : out  STD_LOGIC_VECTOR (7 downto 0)
     );
 end time_date_output;
 
@@ -102,13 +102,13 @@ signal min_finished_prev : std_logic := '0';
 
 begin
 
-td_dow <= internal_dow(2 downto 0);
-td_day <= internal_day(5 downto 0);
-td_month <= internal_month(4 downto 0);
-td_year <= internal_year(7 downto 0);
-td_hour <= internal_hour(5 downto 0);
-td_min <= internal_min(6 downto 0);
-td_sec <= internal_second_counter(6 downto 0);
+td_dow <= internal_dow;
+td_day <= internal_day;
+td_month <= internal_month;
+td_year <= internal_year;
+td_hour <= internal_hour;
+td_min <= internal_min;
+td_sec <= internal_second_counter;
 
 
 process(clk_10k)

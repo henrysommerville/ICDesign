@@ -38,7 +38,7 @@ entity time_date_counter is
         de_set: in STD_LOGIC;
         reset: in STD_LOGIC;
         clk_10K : in STD_LOGIC;
-        td_sec: out STD_LOGIC_VECTOR(6 downto 0);
+        td_sec: out STD_LOGIC_VECTOR(7 downto 0);
         min_finished: out STD_LOGIC
     );
 end time_date_counter;
@@ -51,7 +51,7 @@ signal reset_prev : std_logic := '0';
 signal de_set_prev : std_logic := '0';
 
 begin
-    td_sec <= internal_second_counter(6 downto 0);
+    td_sec <= internal_second_counter;
     
     process(clk_10k)
     begin

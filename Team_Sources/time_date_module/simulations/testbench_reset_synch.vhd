@@ -49,13 +49,13 @@ signal de_min :  STD_LOGIC_VECTOR (6 downto 0):= "0000111";
 signal mode_date: STD_LOGIC := '0';
 signal clk_10K : STD_LOGIC := '0';
 signal td_dcf_show: STD_LOGIC;
-signal td_dow : STD_LOGIC_VECTOR (2 downto 0);
-signal td_day :  STD_LOGIC_VECTOR (5 downto 0);
-signal td_month : STD_LOGIC_VECTOR (4 downto 0);
+signal td_dow : STD_LOGIC_VECTOR (7 downto 0);
+signal td_day :  STD_LOGIC_VECTOR (7 downto 0);
+signal td_month : STD_LOGIC_VECTOR (7 downto 0);
 signal td_year : STD_LOGIC_VECTOR (7 downto 0);
-signal td_hour : STD_LOGIC_VECTOR (5 downto 0);
-signal td_min : STD_LOGIC_VECTOR (6 downto 0);
-signal td_sec : STD_LOGIC_VECTOR (6 downto 0);
+signal td_hour : STD_LOGIC_VECTOR (7 downto 0);
+signal td_min : STD_LOGIC_VECTOR (7 downto 0);
+signal td_sec : STD_LOGIC_VECTOR (7 downto 0);
 signal td_date_status : STD_LOGIC;
 
 begin
@@ -115,48 +115,48 @@ check : process
     begin
         wait until rising_edge(clk_10k);
         wait until rising_edge(clk_10k);
-        assert td_dow = "000" and
-                td_day = "000001" and
-                td_month = "00001" and
-                td_year = "00000001" and
-                td_hour = "000000" and
-                td_min = "0000000"
+        assert td_dow = bcd_0 and
+                td_day = bcd_1 and
+                td_month = bcd_1 and
+                td_year = bcd_1 and
+                td_hour = bcd_0 and
+                td_min = bcd_0
             report "default time values invalid" 
             severity error;
             
         wait until rising_edge(reset);
         wait until rising_edge(clk_10k);
         wait until rising_edge(clk_10k);
-        assert td_dow = "000" and
-                td_day = "000001" and
-                td_month = "00001" and
-                td_year = "00000001" and
-                td_hour = "000000" and
-                td_min = "0000000"
+        assert td_dow = bcd_0 and
+                td_day = bcd_1 and
+                td_month = bcd_1 and
+                td_year = bcd_1 and
+                td_hour = bcd_0 and
+                td_min = bcd_0
             report "reset not sucessfull" 
             severity error;
             
         wait until rising_edge(de_set);
         wait until rising_edge(clk_10k);
         wait until rising_edge(clk_10k);
-        assert td_dow = de_dow and
-                td_day = de_day and
-                td_month = de_month and
-                td_year = de_year and
-                td_hour = de_hour and
-                td_min = de_min
+        assert td_dow(2 downto 0) = de_dow and
+                td_day(5 downto 0) = de_day and
+                td_month(4 downto 0) = de_month and
+                td_year(7 downto 0) = de_year and
+                td_hour(5 downto 0) = de_hour and
+                td_min(6 downto 0) = de_min
             report "synch not sucessfull" 
             severity error;
         
         wait until rising_edge(reset) and rising_edge(de_set);
         wait until rising_edge(clk_10k);
         wait until rising_edge(clk_10k);
-        assert td_dow = "000" and
-                td_day = "000001" and
-                td_month = "00001" and
-                td_year = "00000001" and
-                td_hour = "000000" and
-                td_min = "0000000"
+        assert td_dow = bcd_0 and
+                td_day = bcd_1 and
+                td_month = bcd_1 and
+                td_year = bcd_1 and
+                td_hour = bcd_0 and
+                td_min = bcd_0
             report "reset with synch not sucessfull" 
             severity error;
 
