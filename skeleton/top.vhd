@@ -48,18 +48,11 @@ entity top is
            led_switch_act : out  STD_LOGIC;
            led_switch_on : out  STD_LOGIC;
 			  
-			  lcd_en : out std_logic;
-			  lcd_rw : out std_logic;
-			  lcd_rs : out std_logic;
-			  lcd_data : out std_logic_vector(7 downto 0)
-			  
-			  -- OLED signal only for development
-			  --oled_en : out std_logic;
-			  --oled_dc : out std_logic;
-			  --oled_data : out std_logic;
-			  --oled_reset : out std_logic;
-			  --oled_vdd : out std_logic;
-			  --oled_vbat : out std_logic
+          lcd_en : out std_logic;
+          lcd_rw : out std_logic;
+          lcd_rs : out std_logic;
+          lcd_data : out std_logic_vector(7 downto 0)
+
 		);
 end top;
 
@@ -146,19 +139,30 @@ begin
 			led_countdown_ring => led_countdown_ring,
 			led_switch_act => led_switch_act,
 			led_switch_on => led_switch_on,
-			
-			--oled_en => OLED_SCLK,
-			--oled_dc => OLED_DC,
-			--oled_data => OLED_SDIN,
-			--oled_reset => OLED_RES,
-			--oled_vdd => OLED_VDD,
-			--oled_vbat => OLED_VBAT
-			
 			lcd_en => lcd_en,
 			lcd_rw => lcd_rw,
 			lcd_rs => lcd_rs,
 			lcd_data => lcd_data
 		);
+		
+		
+    -- Time Date Main Module
+	time_date_module : entity work.time_date_module
+		port map(
+		
+        );
+        	
+	 -- Stopwatch Main Module
+	stopwatch_module : entity work.stopwatch_top
+		port map(
+		
+        );
+
+	 -- LCD Main Module
+	lcd_module : entity work.lcd_tb
+		port map(
+		
+        );
 
 end Behavioral;
 
