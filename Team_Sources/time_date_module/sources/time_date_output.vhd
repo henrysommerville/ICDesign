@@ -36,7 +36,6 @@ use work.bcd_package.ALL;
 
 entity time_date_output is
     PORT(
-        min_finished: in STD_LOGIC;
         de_dow : in  STD_LOGIC_VECTOR (2 downto 0);
         de_day : in STD_LOGIC_VECTOR (5 downto 0);
         de_month : in  STD_LOGIC_VECTOR (4 downto 0);

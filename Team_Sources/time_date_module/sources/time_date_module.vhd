@@ -41,7 +41,7 @@ entity time_date_module is
         de_year : in  STD_LOGIC_VECTOR (7 downto 0);
         de_hour : in  STD_LOGIC_VECTOR (5 downto 0);
         de_min : in  STD_LOGIC_VECTOR (6 downto 0);
-        mode_date : in STD_LOGIC;
+        mode : in STD_LOGIC_VECTOR (1 downto 0);
         reset : in  STD_LOGIC;
         clk_10K : in STD_LOGIC;
         td_dcf_show: out STD_LOGIC;
@@ -59,13 +59,10 @@ end time_date_module;
 
 architecture Behavioral of time_date_module is
 
-signal min_finished : STD_LOGIC;
-
 begin
 
 date_output : entity work.time_date_output
      PORT MAP(
-        min_finished => min_finished,
         de_dow => de_dow,
         de_day => de_day,
         de_month => de_month,
@@ -88,7 +85,7 @@ date_output : entity work.time_date_output
 counter_date : entity work.time_date_counter_date
     PORT MAP(
         reset => reset,
-        mode_date => mode_date,
+        mode => mode,
         clk_10K => clk_10K,
         td_date_status => td_date_status
     );
