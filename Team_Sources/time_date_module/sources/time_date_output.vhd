@@ -97,7 +97,6 @@ signal is_februar : boolean;
 
 signal reset_prev : std_logic := '0';
 signal de_set_prev : std_logic := '0';
-signal min_finished_prev : std_logic := '0';
 
 begin
 
@@ -205,8 +204,7 @@ begin
         end if;
         
         reset_prev <= reset;    
-        de_set_prev <= de_set;  
-        min_finished_prev <= min_finished;
+        de_set_prev <= de_set; 
         
     end if; 
    

@@ -66,7 +66,7 @@ package body bcd_package is
             
             if second_digit = 10 then
                 first_digit := first_digit + 1;
-                second_digit := "00000000";
+                second_digit := "0000";
             end if;
            
         return (std_logic_vector(first_digit) & std_logic_vector(second_digit));
