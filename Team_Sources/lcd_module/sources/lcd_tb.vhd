@@ -22,30 +22,29 @@ architecture behavioral of lcd_tb is
             reset : in std_logic;
             en_100    : in std_logic;
             en_10    : in std_logic;
+
+            -- Mode signal
+            mode         : in std_logic_vector(1 downto 0);
             
             -- Time display inputs
-            time_start   : in std_logic;
             td_hour      : in std_logic_vector(7 downto 0);
             td_min       : in std_logic_vector(7 downto 0);
             td_sec       : in std_logic_vector(7 downto 0);
             td_dcf_show  : in std_logic;
             
             -- Date display inputs
-            date_start   : in std_logic;
             td_dow       : in std_logic_vector(2 downto 0);
             td_day       : in std_logic_vector(7 downto 0);
             td_month     : in std_logic_vector(7 downto 0);
             td_year      : in std_logic_vector(7 downto 0);
             
             -- Alarm inputs
-            alarm_start  : in std_logic;
             alarm_act    : in std_logic;
             alarm_snooze : in std_logic;
             alarm_hour   : in std_logic_vector(7 downto 0);
             alarm_min    : in std_logic_vector(7 downto 0);
             
             -- Stopwatch inputs
-            sw_start     : in std_logic;
             sw_lap       : in std_logic;
             sw_hour      : in std_logic_vector(7 downto 0);
             sw_min       : in std_logic_vector(7 downto 0);
@@ -66,29 +65,28 @@ architecture behavioral of lcd_tb is
     signal en_100_tb : std_logic := '0';
     signal en_10_tb : std_logic := '0';
     
+    -- Mode signal
+    signal mode_tb : std_logic_vector(1 downto 0) := "00";
+    
     -- Time display test signals
-    signal time_start_tb : std_logic := '0';
     signal td_hour_tb : std_logic_vector(7 downto 0) := x"14";  -- 14 hours (2 PM)
     signal td_min_tb : std_logic_vector(7 downto 0) := x"25";   -- 25 minutes
     signal td_sec_tb : std_logic_vector(7 downto 0) := x"30";   -- 30 seconds
     signal td_dcf_show_tb : std_logic := '0';
     
     -- Date display test signals
-    signal date_start_tb : std_logic := '0';
     signal td_dow_tb : std_logic_vector(2 downto 0) := "100";   -- Friday
     signal td_day_tb : std_logic_vector(7 downto 0) := x"04";   -- 4th day
     signal td_month_tb : std_logic_vector(7 downto 0) := x"07"; -- July (7th month)
     signal td_year_tb : std_logic_vector(7 downto 0) := x"25";  -- 2025
     
     -- Alarm test signals
-    signal alarm_start_tb : std_logic := '0';
     signal alarm_act_tb : std_logic := '0';
     signal alarm_snooze_tb : std_logic := '0';
     signal alarm_hour_tb : std_logic_vector(7 downto 0) := x"07"; -- 7 AM
     signal alarm_min_tb : std_logic_vector(7 downto 0) := x"30";  -- 30 minutes
     
     -- Stopwatch test signals
-    signal sw_start_tb : std_logic := '0';
     signal sw_lap_tb : std_logic := '0';
     signal sw_hour_tb : std_logic_vector(7 downto 0) := x"01";   -- 1 hour
     signal sw_min_tb : std_logic_vector(7 downto 0) := x"23";    -- 23 minutes
@@ -117,22 +115,19 @@ begin
             reset => reset_tb,
             en_100 => en_100_tb,
             en_10 => en_10_tb,
-            time_start => time_start_tb,
+            mode => mode_tb,
             td_hour => td_hour_tb,
             td_min => td_min_tb,
             td_sec => td_sec_tb,
             td_dcf_show => td_dcf_show_tb,
-            date_start => date_start_tb,
             td_dow => td_dow_tb,
             td_day => td_day_tb,
             td_month => td_month_tb,
             td_year => td_year_tb,
-            alarm_start => alarm_start_tb,
             alarm_act => alarm_act_tb,
             alarm_snooze => alarm_snooze_tb,
             alarm_hour => alarm_hour_tb,
             alarm_min => alarm_min_tb,
-            sw_start => sw_start_tb,
             sw_lap => sw_lap_tb,
             sw_hour => sw_hour_tb,
             sw_min => sw_min_tb,
@@ -183,10 +178,7 @@ begin
         
         -- Initialize all signals
         reset_tb <= '1';
-        time_start_tb <= '0';
-        date_start_tb <= '0';
-        alarm_start_tb <= '0';
-        sw_start_tb <= '0';
+        mode_tb <= "00";
         
         -- Wait for reset
         wait for 100 ns;
@@ -197,46 +189,40 @@ begin
         
         -- **TEST 1: TIME DISPLAY MODE**
         report "Starting TIME display test";
-        time_start_tb <= '1';
+        mode_tb <= "00";        -- Time mode
         td_hour_tb <= x"14";    -- 14:25:30 (2:25:30 PM)
         td_min_tb <= x"25";
         td_sec_tb <= x"30";
         td_dcf_show_tb <= '0';  -- No DCF indicator
         wait for 50 us;
-        time_start_tb <= '0';
         
         -- Test with DCF indicator
         wait for 20 us;
-        time_start_tb <= '1';
         td_dcf_show_tb <= '1';  -- Show DCF indicator
         wait for 50 us;
-        time_start_tb <= '0';
         td_dcf_show_tb <= '0';
         
         -- **TEST 2: DATE DISPLAY MODE**
         report "Starting DATE display test";
         wait for 30 us;
-        date_start_tb <= '1';
+        mode_tb <= "01";        -- Date mode
         td_dow_tb <= "100";     -- Friday
         td_day_tb <= x"04";     -- 4th
         td_month_tb <= x"07";   -- July
         td_year_tb <= x"25";    -- 2025
         wait for 50 us;
-        date_start_tb <= '0';
         
         -- Test different days of week
         wait for 20 us;
-        date_start_tb <= '1';
         td_dow_tb <= "000";     -- Monday
         td_day_tb <= x"15";     -- 15th
         td_month_tb <= x"12";   -- December
         wait for 50 us;
-        date_start_tb <= '0';
         
         -- **TEST 3: ALARM DISPLAY MODE**
         report "Starting ALARM display test";
         wait for 30 us;
-        alarm_start_tb <= '1';
+        mode_tb <= "10";        -- Alarm mode
         alarm_hour_tb <= x"07";  -- 7:30 AM
         alarm_min_tb <= x"30";
         alarm_act_tb <= '0';     -- Alarm not active
@@ -252,12 +238,11 @@ begin
         alarm_snooze_tb <= '1';  -- Alarm snoozed (should show Z)
         wait for 30 us;
         alarm_snooze_tb <= '0';
-        alarm_start_tb <= '0';
         
         -- **TEST 4: STOPWATCH DISPLAY MODE**
         report "Starting STOPWATCH display test";
         wait for 30 us;
-        sw_start_tb <= '1';
+        mode_tb <= "11";        -- Stopwatch mode
         sw_hour_tb <= x"01";     -- 1:23:45.67
         sw_min_tb <= x"23";
         sw_sec_tb <= x"45";
@@ -269,35 +254,30 @@ begin
         sw_lap_tb <= '1';        -- Show lap indicator
         wait for 30 us;
         sw_lap_tb <= '0';
-        sw_start_tb <= '0';
         
         -- **TEST 5: MODE TRANSITIONS**
         report "Testing mode transitions";
         wait for 30 us;
         
         -- Start with time mode
-        time_start_tb <= '1';
+        mode_tb <= "00";
         wait for 20 us;
         
-        -- Switch to date mode (should override time)
-        date_start_tb <= '1';
+        -- Switch to date mode
+        mode_tb <= "01";
         wait for 20 us;
-        time_start_tb <= '0';
         
-        -- Switch to alarm mode (should override date)
-        alarm_start_tb <= '1';
+        -- Switch to alarm mode
+        mode_tb <= "10";
         wait for 20 us;
-        date_start_tb <= '0';
         
-        -- Switch to stopwatch mode (should override alarm)
-        sw_start_tb <= '1';
+        -- Switch to stopwatch mode
+        mode_tb <= "11";
         wait for 20 us;
-        alarm_start_tb <= '0';
         
         -- Return to time mode
-        time_start_tb <= '1';
+        mode_tb <= "00";
         wait for 20 us;
-        sw_start_tb <= '0';
         
         -- **TEST 6: DYNAMIC DATA UPDATES**
         report "Testing dynamic data updates";
@@ -309,8 +289,7 @@ begin
         end loop;
         
         -- Switch to stopwatch and update values
-        sw_start_tb <= '1';
-        time_start_tb <= '0';
+        mode_tb <= "11";
         wait for 20 us;
         
         -- Update stopwatch values
@@ -323,8 +302,7 @@ begin
         report "Testing edge cases";
         
         -- Test maximum values
-        time_start_tb <= '1';
-        sw_start_tb <= '0';
+        mode_tb <= "00";
         td_hour_tb <= x"23";     -- 23:59:59
         td_min_tb <= x"59";
         td_sec_tb <= x"59";
@@ -337,14 +315,12 @@ begin
         wait for 30 us;
         
         -- Test all alarm conditions simultaneously
-        alarm_start_tb <= '1';
-        time_start_tb <= '0';
+        mode_tb <= "10";
         alarm_act_tb <= '1';
         alarm_snooze_tb <= '1';  -- Both active and snooze (snooze should take precedence)
         wait for 30 us;
         
         -- Clean up
-        alarm_start_tb <= '0';
         alarm_act_tb <= '0';
         alarm_snooze_tb <= '0';
         

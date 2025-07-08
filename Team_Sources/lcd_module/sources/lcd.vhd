@@ -18,30 +18,29 @@ entity lcd is
         reset : in std_logic;
         en_100    : in std_logic;
         en_10    : in std_logic;
+
+        -- Mode signal
+        mode         : in std_logic_vector(1 downto 0);
         
         -- Time display inputs
-        time_start   : in std_logic;
         td_hour      : in std_logic_vector(7 downto 0);
         td_min       : in std_logic_vector(7 downto 0);
         td_sec       : in std_logic_vector(7 downto 0);
         td_dcf_show  : in std_logic;
         
         -- Date display inputs
-        date_start   : in std_logic;
         td_dow       : in std_logic_vector(2 downto 0);  -- Day of week
         td_day       : in std_logic_vector(7 downto 0);
         td_month     : in std_logic_vector(7 downto 0);
         td_year      : in std_logic_vector(7 downto 0);
         
         -- Alarm inputs
-        alarm_start  : in std_logic;
         alarm_act    : in std_logic;
         alarm_snooze : in std_logic;
         alarm_hour   : in std_logic_vector(7 downto 0);
         alarm_min    : in std_logic_vector(7 downto 0);
         
         -- Stopwatch inputs
-        sw_start     : in std_logic;
         sw_lap       : in std_logic;
         sw_hour      : in std_logic_vector(7 downto 0);
         sw_min       : in std_logic_vector(7 downto 0);
@@ -171,7 +170,7 @@ begin
             internal_buffer_index_sw := 0;
             internal_buffer := (others=>(others => '0'));
             internal_buffer_sw := (others=>(others => '0'));
-        else
+        elsif rising_edge(clk) then
             if init_done = '1' then
                 if en_10 = '1' then
                     -- Clear display
@@ -254,10 +253,10 @@ begin
                             when others => null;
                         end case;
                         append(internal_buffer, internal_buffer_index, WRITE_DATA_PREFIX & BLANK_SPACE);
-                        append(internal_buffer, internal_buffer_index, WRITE_DATA_PREFIX & NUMBER_PREFIX & "00" & td_day(5 downto 4));
+                        append(internal_buffer, internal_buffer_index, WRITE_DATA_PREFIX & NUMBER_PREFIX & td_day(7 downto 4));
                         append(internal_buffer, internal_buffer_index, WRITE_DATA_PREFIX & NUMBER_PREFIX & td_day(3 downto 0));
                         append(internal_buffer, internal_buffer_index, WRITE_DATA_PREFIX & BACKSLASH);
-                        append(internal_buffer, internal_buffer_index, WRITE_DATA_PREFIX & NUMBER_PREFIX & "000" & td_month(4));
+                        append(internal_buffer, internal_buffer_index, WRITE_DATA_PREFIX & NUMBER_PREFIX & td_month(7 downto 4));
                         append(internal_buffer, internal_buffer_index, WRITE_DATA_PREFIX & NUMBER_PREFIX & td_month(3 downto 0));
                         append(internal_buffer, internal_buffer_index, WRITE_DATA_PREFIX & BACKSLASH);
                         append(internal_buffer, internal_buffer_index, WRITE_DATA_PREFIX & NUMBER_PREFIX & td_year(7 downto 4));
@@ -483,59 +482,72 @@ begin
                     end if;
                     
                 when ST_WAIT =>
-                    if sw_start = '1' then
-                        current_state <= ST_SW;
-                    elsif alarm_start = '1' then
-                        current_state <= ST_ALARM;
-                    elsif date_start = '1' then
-                        current_state <= ST_DATE;
-                    elsif time_start = '1' then
-                        current_state <= ST_TIME;
-                    end if;
+                    case mode is
+                        when "00" =>
+                            current_state <= ST_TIME;
+                        when "01" =>
+                            current_state <= ST_DATE;
+                        when "10" =>
+                            current_state <= ST_ALARM;
+                        when "11" =>
+                            current_state <= ST_SW;
+                    end case;
 
                 when ST_TIME =>
-                    if sw_start = '1' then
-                        current_state <= ST_SW;
-                    elsif alarm_start = '1' then
-                        current_state <= ST_ALARM;
-                    elsif date_start = '1' then
-                        current_state <= ST_DATE;
-                    elsif time_start = '1' then
-                        current_state <= ST_TIME;
-                    end if;
+                    case mode is
+                        when "00" =>
+                            current_state <= ST_TIME;
+                        when "01" =>
+                            current_state <= ST_DATE;
+                        when "10" =>
+                            current_state <= ST_ALARM;
+                        when "11" =>
+                            current_state <= ST_SW;
+                        when others =>
+                            current_state <= ST_WAIT;
+                    end case;
                 
                 when ST_DATE =>
-                    if sw_start = '1' then
-                        current_state <= ST_SW;
-                    elsif alarm_start = '1' then
-                        current_state <= ST_ALARM;
-                    elsif date_start = '1' then
-                        current_state <= ST_DATE;
-                    elsif time_start = '1' then
-                        current_state <= ST_TIME;
-                    end if;
+                    case mode is
+                        when "00" =>
+                            current_state <= ST_TIME;
+                        when "01" =>
+                            current_state <= ST_DATE;
+                        when "10" =>
+                            current_state <= ST_ALARM;
+                        when "11" =>
+                            current_state <= ST_SW;
+                        when others =>
+                            current_state <= ST_WAIT;
+                    end case;
 
                 when ST_ALARM =>
-                    if sw_start = '1' then
-                        current_state <= ST_SW;
-                    elsif alarm_start = '1' then
-                        current_state <= ST_ALARM;
-                    elsif date_start = '1' then
-                        current_state <= ST_DATE;
-                    elsif time_start = '1' then
-                        current_state <= ST_TIME;
-                    end if;
+                    case mode is
+                        when "00" =>
+                            current_state <= ST_TIME;
+                        when "01" =>
+                            current_state <= ST_DATE;
+                        when "10" =>
+                            current_state <= ST_ALARM;
+                        when "11" =>
+                            current_state <= ST_SW;
+                        when others =>
+                            current_state <= ST_WAIT;
+                    end case;
                 
                 when ST_SW =>
-                    if sw_start = '1' then
-                        current_state <= ST_SW;
-                    elsif alarm_start = '1' then
-                        current_state <= ST_ALARM;
-                    elsif date_start = '1' then
-                        current_state <= ST_DATE;
-                    elsif time_start = '1' then
-                        current_state <= ST_TIME;
-                    end if;
+                    case mode is
+                        when "00" =>
+                            current_state <= ST_TIME;
+                        when "01" =>
+                            current_state <= ST_DATE;
+                        when "10" =>
+                            current_state <= ST_ALARM;
+                        when "11" =>
+                            current_state <= ST_SW;
+                        when others =>
+                            current_state <= ST_WAIT;
+                    end case;
 
             end case;
         end if;
