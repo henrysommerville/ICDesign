@@ -14,6 +14,8 @@ entity global_fsm is
 	key_minus_impulse   : in  std_logic;
 	key_plus_impulse    : in  std_logic;
 	td_date_status	    : in  std_logic;  -- this stays up for 3 seconds and i have to detect falling edge
+	alarm_ring          : in  std_logic;
+	
 
     -- mode = 00(normal), 01(date), 10(alarm), 11(stopwatch)
 	mode 		    : out std_logic(1 downto 0);
@@ -21,7 +23,7 @@ entity global_fsm is
 	alarm_set_decr_min  : out std_logic;
 	alarm_toggle_active : out std_logic;
 	alarm_snoozed       : out std_logic;
-	alarm_off           : out std_logic;
+	alarm_off           : out std_logic; 
 	sw_start            : out std_logic;
 	sw_lap_toggle       : out std_logic;
 	sw_reset            : out std_logic;
@@ -49,6 +51,8 @@ signal current_state, next_state : state_type;
     signal sw_start_reg : std_logic;
     signal sw_lap_toggle_reg : std_logic;
     signal sw_reset_reg : std_logic;
+    signal td_date_status_reg : std_logic;
+    signal falling_edge_detected : std_logic;
 
 begin
 
@@ -61,6 +65,22 @@ alarm_off <= alarm_off_reg ;
 sw_start <= sw_start_reg ;
 sw_lap_toggle <= sw_lap_toggle_reg;
 sw_reset <= sw_reset_reg;
+
+
+--falling edge detector
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            if reset = '1' then
+                td_date_status_reg < = '0';
+            else
+                td_date_status_reg <= td_date_status;
+            end if;
+        end if;
+    end process;
+
+    falling_edge_detected <= '1' when (td_date_status_reg = '1' and td_date_status = '0') else '0';
+
 
     process(clk)
     begin
@@ -84,8 +104,6 @@ case current_state is
             when NORMAL =>
                 if key_mode_impulse = '1' then
                     next_state <= DATE;
-                elsif (condition) then
-                    next_state <= ALARM_S1;
 		elsif key_action_impulse = '1' then
 		    next_state <= NALR_SNOOZE;
 		elsif key_action_long = '1' then
@@ -96,6 +114,9 @@ case current_state is
 
             when NALR_SNOOZE =>
                 next_state <= NORMAL;
+
+            when AALR_SNOOZE =>
+                next_state <= ALARM_S1;
 
             when NALR_OFF =>
                 next_state <= NORMAL;
@@ -121,7 +142,13 @@ case current_state is
             when SWALR_OFF =>
                 next_state <= SW_STRT;
 
+            when SWALR_SNOOZE =>
+                next_state <= SW_STRT;
+
             when SALR_OFF =>
+                next_state <= STOPWATCH_S1;
+
+            when SALR_SNOOZE =>
                 next_state <= STOPWATCH_S1;
 
             when S1_SWRST =>
@@ -134,7 +161,9 @@ case current_state is
                 next_state <= STOPWATCH_S1;
 
             when STOPWATCH_S1 =>  
-                if key_action_impulse = '1' then
+		if (key_action_impulse = '1' and alarm_ring = '1') then
+		    next_state <= SALR_SNOOZE;
+                elsif key_action_impulse = '1' then
                     next_state <= SW_STRT;
                 elsif key_action_long = '1' then
                     next_state <= SALR_OFF;
@@ -147,6 +176,8 @@ case current_state is
                     next_state <= ALARM_INC;
                 elsif (key_plus_minus = '0' or key_minus_impulse = '0') then
                     next_state <= ALARM_DEC;
+		elsif (key_action_impulse = '1' and alarm_ring = '1') then
+		    next_state <= AALR_SNOOZE;
 		elsif key_action_impulse = '1' then
 		    next_state <= ALARM_SWITCH;
 		elsif key_action_long = '1' then
@@ -160,6 +191,8 @@ case current_state is
                     next_state <= NORMAL;
                 elsif key_minus_impulse = '1' then
                     next_state <= SW_LAP;
+		elsif (key_action_impulse = '1' and alarm_ring = '1') then
+		    next_state <= SWALR_SNOOZE;
 		elsif key_action_impulse = '1' then
 		    next_state <= SW_PAUSE;
 		elsif key_action_long = '1' then
@@ -180,7 +213,9 @@ case current_state is
                     next_state <= DALR_SNOOZE;
 		elsif key_action_long = '1' then
 		    next_state <= DALR_OFF;
-		elsif (condition for 3s) then    --falling edge logic 
+		elsif key_mode_impulse = '1' then
+		    next_state <= ALARM_S1;
+		elsif falling_edge_detected = '1' then    --falling edge logic 
 		    next_state <= NORMAL;
                 end if;
 
@@ -217,7 +252,17 @@ if rising_edge(clk) then
             when STOPWATCH_S1 =>
 	mode_reg 		    <= 11;
 	sw_reset_reg            <= 0;
+	alarm_off_reg           <= 0;
+	alarm_snoozed_reg       <= 0;
 
+            when DALR_SNOOZE =>
+	alarm_snoozed_reg       <= 1;
+
+            when SWALR_SNOOZE =>
+	alarm_snoozed_reg       <= 1;
+
+            when SALR_SNOOZE =>
+	alarm_snoozed_reg       <= 1;
 
             when DALR_SNOOZE =>
 	alarm_snoozed_reg       <= 1;
@@ -243,6 +288,8 @@ if rising_edge(clk) then
             when SW_STRT =>
 	sw_start_reg            <= 1;
 	sw_reset_reg            <= 0;
+	alarm_off_reg           <= 0;
+	alarm_snoozed_reg       <= 0;
 
             when SW_PAUSE =>
 	sw_start_reg            <= 0;
