@@ -7,18 +7,19 @@ entity global_fsm is
         clk                 : in  std_logic;
         reset               : in  std_logic;
 	
-	key_enable	    : in  std_logic:
+	key_enable	    : in  std_logic;
 	key_action_impulse  : in  std_logic;
 	key_action_long     : in  std_logic;
 	key_mode_impulse    : in  std_logic;
 	key_minus_impulse   : in  std_logic;
 	key_plus_impulse    : in  std_logic;
+	key_plus_minus      : in  std_logic;
 	td_date_status	    : in  std_logic;  -- this stays up for 3 seconds and i have to detect falling edge
 	alarm_ring          : in  std_logic;
 	
 
     -- mode = 00(normal), 01(date), 10(alarm), 11(stopwatch)
-	mode 		    : out std_logic(1 downto 0);
+	mode 		    : out std_logic_vector(1 downto 0);
 	alarm_set_incr_min  : out std_logic;
 	alarm_set_decr_min  : out std_logic;
 	alarm_toggle_active : out std_logic;
@@ -26,7 +27,7 @@ entity global_fsm is
 	alarm_off           : out std_logic; 
 	sw_start            : out std_logic;
 	sw_lap_toggle       : out std_logic;
-	sw_reset            : out std_logic;
+	sw_reset            : out std_logic
 );
 end global_fsm;
 
@@ -42,7 +43,7 @@ architecture Behavioral of global_fsm is
 signal current_state, next_state : state_type;
 
     -- Internal output registers
-    signal mode_reg : std_logic(1 downto 0);
+    signal mode_reg : std_logic_vector(1 downto 0);
     signal alarm_set_incr_min_reg : std_logic;
     signal alarm_set_decr_min_reg : std_logic;
     signal alarm_toggle_active_reg : std_logic;
@@ -72,7 +73,7 @@ sw_reset <= sw_reset_reg;
     begin
         if rising_edge(clk) then
             if reset = '1' then
-                td_date_status_reg < = '0';
+                td_date_status_reg <= '0';
             else
                 td_date_status_reg <= td_date_status;
             end if;
@@ -95,7 +96,7 @@ sw_reset <= sw_reset_reg;
 
     end process;
 
-process(key_enable,key_action_impulse, key_action_long, key_mode_impulse,key_minus_impulse,key_plus_impulse, td_date_status, transient)
+process(key_enable,key_action_impulse, key_action_long, key_mode_impulse,key_minus_impulse,key_plus_impulse, td_date_status)
 begin
 case current_state is
             when RESET_ST =>
@@ -227,95 +228,93 @@ end process;
     begin
 if rising_edge(clk) then
         case current_state is
-            when RESET =>
-   	mode_reg <= 0 ;
-	alarm_set_incr_min_reg <= 0 ;
-	alarm_set_decr_min_reg <= 0 ;
-	alarm_toggle_active_reg <= 0 ;
-	alarm_snoozed_reg <= 0 ;
-	alarm_off_reg <= 0 ;
-	sw_start_reg <= 0 ;
-	sw_lap_toggle_reg <= 0;
-	sw_reset_reg <= 0;
+            when RESET_ST =>
+                mode_reg <= (others => '0') ;
+                alarm_set_incr_min_reg <= '0' ;
+                alarm_set_decr_min_reg <= '0' ;
+                alarm_toggle_active_reg <= '0' ;
+                alarm_snoozed_reg <= '0' ;
+                alarm_off_reg <= '0' ;
+                sw_start_reg <= '0' ;
+                sw_lap_toggle_reg <= '0';
+                sw_reset_reg <= '0';
 
             when NORMAL =>
-	mode_reg 		    <= 00;
-	alarm_off_reg           <= 0;
-	alarm_snoozed_reg       <= 0;
+	mode_reg 		    <= "00";
+	alarm_off_reg           <= '0';
+	alarm_snoozed_reg       <= '0';
 
             when DATE =>
-	mode_reg 		    <= 01;
-	alarm_off_reg           <= 0;
-	alarm_snoozed_reg       <= 0;	
+	mode_reg 		    <= "01";
+	alarm_off_reg           <= '0';
+	alarm_snoozed_reg       <= '0';	
  
 
             when STOPWATCH_S1 =>
-	mode_reg 		    <= 11;
-	sw_reset_reg            <= 0;
-	alarm_off_reg           <= 0;
-	alarm_snoozed_reg       <= 0;
+	mode_reg 		    <= "11";
+	sw_reset_reg            <= '0';
+	alarm_off_reg           <= '0';
+	alarm_snoozed_reg       <= '0';
 
             when DALR_SNOOZE =>
-	alarm_snoozed_reg       <= 1;
+	alarm_snoozed_reg       <= '1';
 
             when SWALR_SNOOZE =>
-	alarm_snoozed_reg       <= 1;
+	alarm_snoozed_reg       <= '1';
 
             when SALR_SNOOZE =>
-	alarm_snoozed_reg       <= 1;
+	alarm_snoozed_reg       <= '1';
 
-            when DALR_SNOOZE =>
-	alarm_snoozed_reg       <= 1;
 
             when DALR_OFF =>
-	alarm_off_reg           <= 1;
+	alarm_off_reg           <= '1';
 
             when ALARM_S1 =>
-	mode_reg 		    <= 10;
-	alarm_set_incr_min_reg  <= 0;
-	alarm_set_decr_min_reg  <= 0;
-	alarm_off_reg           <= 0;
-	alarm_snoozed_reg       <= 0;
+	mode_reg 		    <= "10";
+	alarm_set_incr_min_reg  <= '0';
+	alarm_set_decr_min_reg  <= '0';
+	alarm_off_reg           <= '0';
+	alarm_snoozed_reg       <= '0';
 
 
             when NALR_SNOOZE =>
-	alarm_snoozed_reg       <= 1;
+	alarm_snoozed_reg       <= '1';
 
 
             when NALR_OFF =>
-	alarm_off_reg           <= 1;
+	alarm_off_reg           <= '1';
 
             when SW_STRT =>
-	sw_start_reg            <= 1;
-	sw_reset_reg            <= 0;
-	alarm_off_reg           <= 0;
-	alarm_snoozed_reg       <= 0;
+	sw_start_reg            <= '1';
+	sw_reset_reg            <= '0';
+	alarm_off_reg           <= '0';
+	alarm_snoozed_reg       <= '0';
 
             when SW_PAUSE =>
-	sw_start_reg            <= 0;
+	sw_start_reg            <= '0';
 
 
             when SALR_OFF =>
-	alarm_off_reg           <= 1;
+	alarm_off_reg           <= '1';
 
 
             when S1_SWRST =>
-	sw_start_reg            <= 0;
-	sw_lap_toggle_reg       <= 0;
-	sw_reset_reg            <= 1;
+	sw_start_reg            <= '0';
+	sw_lap_toggle_reg       <= '0';
+	sw_reset_reg            <= '1';
 
             when ALARM_INC =>
-	alarm_set_incr_min_reg  <= 1;
+	alarm_set_incr_min_reg  <= '1';
 
             when ALARM_DEC =>
-	alarm_set_incr_min_reg  <= 1;
+	alarm_set_incr_min_reg  <= '1';
 
             when ALARM_SWITCH =>
 	alarm_toggle_active_reg <= not alarm_toggle_active_reg;
 
 
             when AALR_OFF =>
-	alarm_off_reg           <= 1;
+	alarm_off_reg           <= '1';
 
 
             when SW_LAP =>
@@ -323,13 +322,24 @@ if rising_edge(clk) then
 
 
             when SWALR_OFF =>
-	alarm_off_reg           <= 1;
+	alarm_off_reg           <= '1';
 
 
             when INTSW_RST =>
-	sw_start_reg            <= 0;
-	sw_lap_toggle_reg       <= 0;
-	sw_reset_reg            <= 1;
+	sw_start_reg            <= '0';
+	sw_lap_toggle_reg       <= '0';
+	sw_reset_reg            <= '1';
+	
+	       when others =>
+                mode_reg <= (others => '0') ;
+                alarm_set_incr_min_reg <= '0' ;
+                alarm_set_decr_min_reg <= '0' ;
+                alarm_toggle_active_reg <= '0' ;
+                alarm_snoozed_reg <= '0' ;
+                alarm_off_reg <= '0' ;
+                sw_start_reg <= '0' ;
+                sw_lap_toggle_reg <= '0';
+                sw_reset_reg <= '0';	       
 
         end case;
       end if;

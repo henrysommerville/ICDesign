@@ -98,7 +98,10 @@ architecture Behavioral of clock_module is
     signal o_sw_time_min        : STD_LOGIC_VECTOR(7 downto 0) := (others => '0'); 
     signal o_sw_time_h          : STD_LOGIC_VECTOR(7 downto 0) := (others => '0');
     signal o_sw_lap             : STD_LOGIC := '0';                 
-
+    
+    
+    -- Alarm Module
+    signal alarm_ring           : STD_LOGIC := '0';
 
 begin
 	
@@ -196,5 +199,33 @@ begin
 --                    lcd_data        => lcd_data
 --        );
 
+	 -- LCD Main Module
+	global_fsm_module : entity work.global_fsm
+		port map(
+		 clk                => clk, 
+        reset              =>  reset, 
+	
+	key_enable	   =>  key_enable,  
+	key_action_impulse =>  key_action_imp, 
+	key_action_long    =>  key_action_long, 
+	key_mode_impulse   =>  key_mode_imp, 
+	key_minus_impulse  =>  key_minus_imp, 
+	key_plus_impulse   =>  key_plus_imp, 
+	key_plus_minus     =>  key_plus_minus, 
+	td_date_status	   =>  td_date_status, 
+	alarm_ring         =>  alarm_ring, 
+	
+
+    -- mode = 00(normal), 01(date), 10(alarm), 11(stopwatch)
+	mode 		   =>  mode, 
+	alarm_set_incr_min =>  alarm_set_incr_min, 
+	alarm_set_decr_min =>  alarm_set_decr_min, 
+	alarm_toggle_active=>  alarm_toggle_active, 
+	alarm_snoozed      =>  alarm_snoozed, 
+	alarm_off          =>  alarm_off, 
+	sw_start           =>  sw_start, 
+	sw_lap_toggle      =>  sw_lap_toggle, 
+	sw_reset           =>  sw_reset
+		);
 end Behavioral;
 
