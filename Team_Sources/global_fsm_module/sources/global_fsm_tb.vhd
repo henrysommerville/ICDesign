@@ -10,27 +10,30 @@ architecture Behavioral of tb_global_fsm is
     -- Component Declaration
     component global_fsm
         Port (
-            clk                 : in  std_logic;
-            reset               : in  std_logic;
-            key_enable          : in  std_logic;
-            key_action_impulse  : in  std_logic;
-            key_action_long     : in  std_logic;
-            key_mode_impulse    : in  std_logic;
-            key_minus_impulse   : in  std_logic;
-            key_plus_impulse    : in  std_logic;
-            key_plus_minus      : in  std_logic;
-            td_date_status      : in  std_logic;
-            alarm_ring          : in  std_logic;
-
-            mode                : out std_logic_vector(1 downto 0);
-            alarm_set_incr_min  : out std_logic;
-            alarm_set_decr_min  : out std_logic;
-            alarm_toggle_active : out std_logic;
-            alarm_snoozed       : out std_logic;
-            alarm_off           : out std_logic;
-            sw_start            : out std_logic;
-            sw_lap_toggle       : out std_logic;
-            sw_reset            : out std_logic
+        clk                 : in  std_logic;
+        reset               : in  std_logic;
+	
+        key_enable	    : in  std_logic;
+        key_action_impulse  : in  std_logic;
+        key_action_long     : in  std_logic;
+        key_mode_impulse    : in  std_logic;
+        key_minus_impulse   : in  std_logic;
+        key_plus_impulse    : in  std_logic;
+        key_plus_minus      : in  std_logic;
+        td_date_status	    : in  std_logic;  -- this stays up for 3 seconds and i have to detect falling edge
+        alarm_ring          : in  std_logic;
+       
+        -- mode = 00(normal), 01(date), 10(alarm), 11(stopwatch)
+        mode 		    : out std_logic_vector(1 downto 0);
+        alarm_set_incr_min  : out std_logic;
+        alarm_set_decr_min  : out std_logic;
+        alarm_toggle_active : out std_logic;
+        alarm_snoozed       : out std_logic;
+        alarm_off           : out std_logic; 
+        sw_start            : out std_logic;
+        sw_lap_toggle       : out std_logic;
+        sw_reset            : out std_logic;
+        current_state_out   : out std_logic
         );
     end component;
 
@@ -56,8 +59,8 @@ architecture Behavioral of tb_global_fsm is
     signal sw_start            : std_logic;
     signal sw_lap_toggle       : std_logic;
     signal sw_reset            : std_logic;
-
-    constant clk_period : time := 10 ns;
+    signal current_state_out   : std_logic;
+    constant clk_period : time := 100 us;
 
 begin
 
@@ -83,7 +86,8 @@ begin
             alarm_off           => alarm_off,
             sw_start            => sw_start,
             sw_lap_toggle       => sw_lap_toggle,
-            sw_reset            => sw_reset
+            sw_reset            => sw_reset,
+            current_state_out   => current_state_out
         );
 
     -- Clock Generation
@@ -143,6 +147,8 @@ begin
         wait for clk_period;
         key_minus_impulse <= '0';
         wait for clk_period;
+        
+        wait for 10 sec;
 
         ----------------------------------------------------------
         -- 6. STOPWATCH to SALR_OFF via long press

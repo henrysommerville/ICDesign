@@ -102,7 +102,11 @@ architecture Behavioral of clock_module is
     
     -- Alarm Module
     signal alarm_ring           : STD_LOGIC := '0';
-
+    signal alarm_act            : STD_LOGIC := '0';
+    signal alarm_snooze         : STD_LOGIC := '0';
+    signal alarm_hour           : std_logic_vector(7 downto 0) := "00000000";
+    signal alarm_min            : std_logic_vector(7 downto 0) := "00000000";
+                        
 begin
 	
     -- Time Date Main Module
@@ -154,9 +158,51 @@ begin
                     o_sw_lap        => o_sw_lap                 -- Lap time toggle
         );
 
+	 -- LCD Main Module with fixed inputs
+	lcd_module : entity work.lcd
+		port map(
+		            mode            => "01",
+		            -- System signals
+                    clk             => clk,
+                    reset           => reset,
+                    en_100          => en_100,
+                    en_10           => en_10,
+                    
+                    -- Time display inputs
+                    td_hour         => "00010010",
+                    td_min          => "00100011",
+                    td_sec          => "00000010",
+                    td_dcf_show     => '0',
+                    
+                    -- Date display inputs
+                    td_dow          => "00000000",
+                    td_day          => "00000000",
+                    td_month        => "00000000",
+                    td_year         => "00000000",
+                    
+                    -- Alarm inputs
+                    alarm_act       => '0',
+                    alarm_snooze    => '0',
+                    alarm_hour      => "00000000",
+                    alarm_min       => "00000000",
+                    
+                    -- Stopwatch inputs
+                    sw_lap          => '0',
+                    sw_hour         => "00000000",
+                    sw_min          => "00000000",
+                    sw_sec          => "00000000",
+                    sw_hsec         => "00000000",
+                    
+                    -- LCD hardware interface
+                    lcd_en          => lcd_en,
+                    lcd_rw          => lcd_rw,
+                    lcd_rs          => lcd_rs,
+                    lcd_data        => lcd_data
+        );
 --	 -- LCD Main Module
---	lcd_module : entity work.lcd_tb
+--	lcd_module : entity work.lcd
 --		port map(
+--		            mode            => mode,
 --		            -- System signals
 --                    clk             => clk,
 --                    reset           => reset,
@@ -164,28 +210,24 @@ begin
 --                    en_10           => en_10,
                     
 --                    -- Time display inputs
---                    time_start      =>,
 --                    td_hour         => td_hour,
 --                    td_min          => td_min,
 --                    td_sec          => td_sec,
 --                    td_dcf_show     => td_dcf_show,
                     
 --                    -- Date display inputs
---                    date_start      =>,
 --                    td_dow          => td_dow,
 --                    td_day          => td_day,
 --                    td_month        => td_month,
 --                    td_year         => td_year,
                     
 --                    -- Alarm inputs
---                    alarm_start     =>,
---                    alarm_act       =>,
+--                    alarm_act       => alarm_act,
 --                    alarm_snooze    => alarm_snoozed,
---                    alarm_hour      => ,
---                    alarm_min       => ,
+--                    alarm_hour      => alarm_hour,
+--                    alarm_min       => alarm_min,
                     
 --                    -- Stopwatch inputs
---                    sw_start        => sw_start,
 --                    sw_lap          => o_sw_lap,
 --                    sw_hour         => o_sw_time_h,
 --                    sw_min          => o_sw_time_min,
@@ -199,7 +241,7 @@ begin
 --                    lcd_data        => lcd_data
 --        );
 
-	 -- LCD Main Module
+	 -- Global FSM Module
 	global_fsm_module : entity work.global_fsm
 		port map(
 		 clk                => clk, 
