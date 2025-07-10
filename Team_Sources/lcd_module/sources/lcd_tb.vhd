@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------
--- Author       : Pablo Morales
--- Create Date  : 04/07/2025
+-- Author       : Pablo Morales Escandon
+-- Create Date  : 09/07/2025
 -- Module Name  : lcd_tb.vhd
--- Description  : Testbench for LCD Controller Module
+-- Description  : LCD Controller Testbench
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -12,46 +12,33 @@ use ieee.numeric_std.all;
 entity lcd_tb is
 end entity lcd_tb;
 
-architecture behavioral of lcd_tb is
+architecture behavior of lcd_tb is
     
     -- Component declaration
     component lcd is
         port (
-            -- System signals
-            clk   : in std_logic;
-            reset : in std_logic;
-            en_100    : in std_logic;
-            en_10    : in std_logic;
-
-            -- Mode signal
+            clk          : in std_logic;
+            reset        : in std_logic;
+            en_100       : in std_logic;
+            en_10        : in std_logic;
             mode         : in std_logic_vector(1 downto 0);
-            
-            -- Time display inputs
             td_hour      : in std_logic_vector(7 downto 0);
             td_min       : in std_logic_vector(7 downto 0);
             td_sec       : in std_logic_vector(7 downto 0);
             td_dcf_show  : in std_logic;
-            
-            -- Date display inputs
-            td_dow       : in std_logic_vector(2 downto 0);
+            td_dow       : in std_logic_vector(7 downto 0);
             td_day       : in std_logic_vector(7 downto 0);
             td_month     : in std_logic_vector(7 downto 0);
             td_year      : in std_logic_vector(7 downto 0);
-            
-            -- Alarm inputs
             alarm_act    : in std_logic;
             alarm_snooze : in std_logic;
             alarm_hour   : in std_logic_vector(7 downto 0);
             alarm_min    : in std_logic_vector(7 downto 0);
-            
-            -- Stopwatch inputs
             sw_lap       : in std_logic;
             sw_hour      : in std_logic_vector(7 downto 0);
             sw_min       : in std_logic_vector(7 downto 0);
             sw_sec       : in std_logic_vector(7 downto 0);
             sw_hsec      : in std_logic_vector(7 downto 0);
-            
-            -- LCD hardware interface
             lcd_en       : out std_logic;
             lcd_rw       : out std_logic;
             lcd_rs       : out std_logic;
@@ -59,290 +46,169 @@ architecture behavioral of lcd_tb is
         );
     end component;
     
+    -- Clock period definition
+    constant clk_period : time := 10 ns;  -- 100MHz clock
+    
     -- Test signals
-    signal clk_tb : std_logic := '0';
-    signal reset_tb : std_logic := '1';
-    signal en_100_tb : std_logic := '0';
-    signal en_10_tb : std_logic := '0';
-    
-    -- Mode signal
-    signal mode_tb : std_logic_vector(1 downto 0) := "00";
-    
-    -- Time display test signals
-    signal td_hour_tb : std_logic_vector(7 downto 0) := x"14";  -- 14 hours (2 PM)
-    signal td_min_tb : std_logic_vector(7 downto 0) := x"25";   -- 25 minutes
-    signal td_sec_tb : std_logic_vector(7 downto 0) := x"30";   -- 30 seconds
-    signal td_dcf_show_tb : std_logic := '0';
-    
-    -- Date display test signals
-    signal td_dow_tb : std_logic_vector(2 downto 0) := "100";   -- Friday
-    signal td_day_tb : std_logic_vector(7 downto 0) := x"04";   -- 4th day
-    signal td_month_tb : std_logic_vector(7 downto 0) := x"07"; -- July (7th month)
-    signal td_year_tb : std_logic_vector(7 downto 0) := x"25";  -- 2025
-    
-    -- Alarm test signals
-    signal alarm_act_tb : std_logic := '0';
-    signal alarm_snooze_tb : std_logic := '0';
-    signal alarm_hour_tb : std_logic_vector(7 downto 0) := x"07"; -- 7 AM
-    signal alarm_min_tb : std_logic_vector(7 downto 0) := x"30";  -- 30 minutes
-    
-    -- Stopwatch test signals
-    signal sw_lap_tb : std_logic := '0';
-    signal sw_hour_tb : std_logic_vector(7 downto 0) := x"01";   -- 1 hour
-    signal sw_min_tb : std_logic_vector(7 downto 0) := x"23";    -- 23 minutes
-    signal sw_sec_tb : std_logic_vector(7 downto 0) := x"45";    -- 45 seconds
-    signal sw_hsec_tb : std_logic_vector(7 downto 0) := x"67";   -- 67 hundredths
+    signal clk          : std_logic := '0';
+    signal reset        : std_logic := '1';
+    signal en_100       : std_logic := '0';
+    signal en_10        : std_logic := '0';
+    signal mode         : std_logic_vector(1 downto 0) := "00";
+    signal td_hour      : std_logic_vector(7 downto 0) := x"14";
+    signal td_min       : std_logic_vector(7 downto 0) := x"35";
+    signal td_sec       : std_logic_vector(7 downto 0) := x"42";
+    signal td_dcf_show  : std_logic := '1';
+    signal td_dow       : std_logic_vector(7 downto 0) := x"01";
+    signal td_day       : std_logic_vector(7 downto 0) := x"09";
+    signal td_month     : std_logic_vector(7 downto 0) := x"07";
+    signal td_year      : std_logic_vector(7 downto 0) := x"25";
+    signal alarm_act    : std_logic := '1';
+    signal alarm_snooze : std_logic := '0';
+    signal alarm_hour   : std_logic_vector(7 downto 0) := x"07";
+    signal alarm_min    : std_logic_vector(7 downto 0) := x"30";
+    signal sw_lap       : std_logic := '0';
+    signal sw_hour      : std_logic_vector(7 downto 0) := x"01";
+    signal sw_min       : std_logic_vector(7 downto 0) := x"23";
+    signal sw_sec       : std_logic_vector(7 downto 0) := x"45";
+    signal sw_hsec      : std_logic_vector(7 downto 0) := x"67";
     
     -- Output signals
-    signal lcd_en_tb : std_logic;
-    signal lcd_rw_tb : std_logic;
-    signal lcd_rs_tb : std_logic;
-    signal lcd_data_tb : std_logic_vector(7 downto 0);
+    signal lcd_en       : std_logic;
+    signal lcd_rw       : std_logic;
+    signal lcd_rs       : std_logic;
+    signal lcd_data     : std_logic_vector(7 downto 0);
     
-    -- Clock period
-    constant clk_period : time := 10 ns;
-    
-    -- Enable signal counters for timing
+    -- Enable pulse generators
     signal en_100_counter : integer := 0;
-    signal en_10_counter : integer := 0;
+    signal en_10_counter  : integer := 0;
     
 begin
     
     -- Instantiate the Unit Under Test (UUT)
     uut: lcd
         port map (
-            clk => clk_tb,
-            reset => reset_tb,
-            en_100 => en_100_tb,
-            en_10 => en_10_tb,
-            mode => mode_tb,
-            td_hour => td_hour_tb,
-            td_min => td_min_tb,
-            td_sec => td_sec_tb,
-            td_dcf_show => td_dcf_show_tb,
-            td_dow => td_dow_tb,
-            td_day => td_day_tb,
-            td_month => td_month_tb,
-            td_year => td_year_tb,
-            alarm_act => alarm_act_tb,
-            alarm_snooze => alarm_snooze_tb,
-            alarm_hour => alarm_hour_tb,
-            alarm_min => alarm_min_tb,
-            sw_lap => sw_lap_tb,
-            sw_hour => sw_hour_tb,
-            sw_min => sw_min_tb,
-            sw_sec => sw_sec_tb,
-            sw_hsec => sw_hsec_tb,
-            lcd_en => lcd_en_tb,
-            lcd_rw => lcd_rw_tb,
-            lcd_rs => lcd_rs_tb,
-            lcd_data => lcd_data_tb
+            clk          => clk,
+            reset        => reset,
+            en_100       => en_100,
+            en_10        => en_10,
+            mode         => mode,
+            td_hour      => td_hour,
+            td_min       => td_min,
+            td_sec       => td_sec,
+            td_dcf_show  => td_dcf_show,
+            td_dow       => td_dow,
+            td_day       => td_day,
+            td_month     => td_month,
+            td_year      => td_year,
+            alarm_act    => alarm_act,
+            alarm_snooze => alarm_snooze,
+            alarm_hour   => alarm_hour,
+            alarm_min    => alarm_min,
+            sw_lap       => sw_lap,
+            sw_hour      => sw_hour,
+            sw_min       => sw_min,
+            sw_sec       => sw_sec,
+            sw_hsec      => sw_hsec,
+            lcd_en       => lcd_en,
+            lcd_rw       => lcd_rw,
+            lcd_rs       => lcd_rs,
+            lcd_data     => lcd_data
         );
     
     -- Clock generation
     clk_process: process
     begin
-        clk_tb <= '0';
+        clk <= '0';
         wait for clk_period/2;
-        clk_tb <= '1';
+        clk <= '1';
         wait for clk_period/2;
     end process;
     
-    -- Enable signal generation (simulating 100Hz and 10Hz enables)
-    enable_process: process(clk_tb)
+    -- Enable pulse generation (100Hz and 10Hz)
+    enable_gen: process(clk, reset)
     begin
-        if rising_edge(clk_tb) then
-            -- Generate en_100 signal (every 1000 clock cycles for 100Hz at 100kHz clock)
+        if reset = '1' then
+            en_100_counter <= 0;
+            en_10_counter <= 0;
+            en_100 <= '0';
+            en_10 <= '0';
+        elsif rising_edge(clk) then
+            -- Generate 100Hz enable (every 1000 clock cycles at 100MHz)
             if en_100_counter >= 999 then
-                en_100_tb <= '1';
                 en_100_counter <= 0;
+                en_100 <= '1';
             else
-                en_100_tb <= '0';
                 en_100_counter <= en_100_counter + 1;
+                en_100 <= '0';
             end if;
             
-            -- Generate en_10 signal (every 10000 clock cycles for 10Hz at 100kHz clock)
+            -- Generate 10Hz enable (every 10000 clock cycles at 100MHz)
             if en_10_counter >= 9999 then
-                en_10_tb <= '1';
                 en_10_counter <= 0;
+                en_10 <= '1';
             else
-                en_10_tb <= '0';
                 en_10_counter <= en_10_counter + 1;
+                en_10 <= '0';
             end if;
         end if;
     end process;
     
-    -- Test stimulus process
-    stimulus_process: process
+    -- Main test stimulus process
+    stim_proc: process
     begin
-        
-        -- Initialize all signals
-        reset_tb <= '1';
-        mode_tb <= "00";
-        
-        -- Wait for reset
+        -- Initial reset
+        reset <= '1';
         wait for 100 ns;
-        reset_tb <= '0';
+        reset <= '0';
         
-        -- Wait for initialization to complete
+        -- Wait for initialization
         wait for 10 us;
         
-        -- **TEST 1: TIME DISPLAY MODE**
-        report "Starting TIME display test";
-        mode_tb <= "00";        -- Time mode
-        td_hour_tb <= x"14";    -- 14:25:30 (2:25:30 PM)
-        td_min_tb <= x"25";
-        td_sec_tb <= x"30";
-        td_dcf_show_tb <= '0';  -- No DCF indicator
-        wait for 50 us;
+        -- Test Mode 00 (Time)
+        mode <= "00";
+        wait for 200 us;
         
-        -- Test with DCF indicator
-        wait for 20 us;
-        td_dcf_show_tb <= '1';  -- Show DCF indicator
-        wait for 50 us;
-        td_dcf_show_tb <= '0';
+        -- Test Mode 01 (Date)
+        mode <= "01";
+        wait for 200 us;
         
-        -- **TEST 2: DATE DISPLAY MODE**
-        report "Starting DATE display test";
-        wait for 30 us;
-        mode_tb <= "01";        -- Date mode
-        td_dow_tb <= "100";     -- Friday
-        td_day_tb <= x"04";     -- 4th
-        td_month_tb <= x"07";   -- July
-        td_year_tb <= x"25";    -- 2025
-        wait for 50 us;
+        -- Test Mode 10 (Alarm)
+        mode <= "10";
+        wait for 200 us;
         
-        -- Test different days of week
-        wait for 20 us;
-        td_dow_tb <= "000";     -- Monday
-        td_day_tb <= x"15";     -- 15th
-        td_month_tb <= x"12";   -- December
-        wait for 50 us;
+        -- Test Mode 11 (Stopwatch)
+        mode <= "11";
+        wait for 200 us;
         
-        -- **TEST 3: ALARM DISPLAY MODE**
-        report "Starting ALARM display test";
-        wait for 30 us;
-        mode_tb <= "10";        -- Alarm mode
-        alarm_hour_tb <= x"07";  -- 7:30 AM
-        alarm_min_tb <= x"30";
-        alarm_act_tb <= '0';     -- Alarm not active
-        alarm_snooze_tb <= '0';  -- Not snoozed
-        wait for 50 us;
-        
-        -- Test with active alarm
-        alarm_act_tb <= '1';     -- Alarm active (should show *)
-        wait for 30 us;
-        alarm_act_tb <= '0';
-        
-        -- Test with snooze
-        alarm_snooze_tb <= '1';  -- Alarm snoozed (should show Z)
-        wait for 30 us;
-        alarm_snooze_tb <= '0';
-        
-        -- **TEST 4: STOPWATCH DISPLAY MODE**
-        report "Starting STOPWATCH display test";
-        wait for 30 us;
-        mode_tb <= "11";        -- Stopwatch mode
-        sw_hour_tb <= x"01";     -- 1:23:45.67
-        sw_min_tb <= x"23";
-        sw_sec_tb <= x"45";
-        sw_hsec_tb <= x"67";
-        sw_lap_tb <= '0';        -- No lap indicator
-        wait for 50 us;
-        
-        -- Test with lap indicator
-        sw_lap_tb <= '1';        -- Show lap indicator
-        wait for 30 us;
-        sw_lap_tb <= '0';
-        
-        -- **TEST 5: MODE TRANSITIONS**
-        report "Testing mode transitions";
-        wait for 30 us;
-        
-        -- Start with time mode
-        mode_tb <= "00";
-        wait for 20 us;
-        
-        -- Switch to date mode
-        mode_tb <= "01";
-        wait for 20 us;
-        
-        -- Switch to alarm mode
-        mode_tb <= "10";
-        wait for 20 us;
-        
-        -- Switch to stopwatch mode
-        mode_tb <= "11";
-        wait for 20 us;
-        
-        -- Return to time mode
-        mode_tb <= "00";
-        wait for 20 us;
-        
-        -- **TEST 6: DYNAMIC DATA UPDATES**
-        report "Testing dynamic data updates";
-        
-        -- Update time values while in time mode
-        for i in 0 to 5 loop
-            td_sec_tb <= std_logic_vector(to_unsigned(30 + i, 8));
-            wait for 15 us;
-        end loop;
-        
-        -- Switch to stopwatch and update values
-        mode_tb <= "11";
-        wait for 20 us;
-        
-        -- Update stopwatch values
-        for i in 0 to 3 loop
-            sw_hsec_tb <= std_logic_vector(to_unsigned(67 + i*10, 8));
-            wait for 15 us;
-        end loop;
-        
-        -- **TEST 7: EDGE CASES**
-        report "Testing edge cases";
-        
-        -- Test maximum values
-        mode_tb <= "00";
-        td_hour_tb <= x"23";     -- 23:59:59
-        td_min_tb <= x"59";
-        td_sec_tb <= x"59";
-        wait for 30 us;
-        
-        -- Test minimum values
-        td_hour_tb <= x"00";     -- 00:00:00
-        td_min_tb <= x"00";
-        td_sec_tb <= x"00";
-        wait for 30 us;
-        
-        -- Test all alarm conditions simultaneously
-        mode_tb <= "10";
-        alarm_act_tb <= '1';
-        alarm_snooze_tb <= '1';  -- Both active and snooze (snooze should take precedence)
-        wait for 30 us;
-        
-        -- Clean up
-        alarm_act_tb <= '0';
-        alarm_snooze_tb <= '0';
-        
-        report "All tests completed successfully";
+        -- Cycle through modes again
+        mode <= "00";
         wait for 100 us;
+        mode <= "01";
+        wait for 100 us;
+        mode <= "10";
+        wait for 100 us;
+        mode <= "11";
+        wait for 100 us;
+        
+        -- Test some signal variations
+        td_dcf_show <= '0';
+        wait for 50 us;
+        td_dcf_show <= '1';
+        wait for 50 us;
+        
+        alarm_snooze <= '1';
+        wait for 50 us;
+        alarm_snooze <= '0';
+        wait for 50 us;
+        
+        sw_lap <= '1';
+        wait for 50 us;
+        sw_lap <= '0';
+        wait for 50 us;
         
         -- End simulation
         wait;
-        
     end process;
-    
-    -- Monitor process to display LCD output
-    monitor_process: process(clk_tb)
-    begin
-        if rising_edge(clk_tb) then
-            if lcd_en_tb = '1' then
-                report "LCD Output - EN: " & std_logic'image(lcd_en_tb) & 
-                       ", RS: " & std_logic'image(lcd_rs_tb) & 
-                       ", RW: " & std_logic'image(lcd_rw_tb) & 
-                       ", DATA: " & integer'image(to_integer(unsigned(lcd_data_tb)));
-            end if;
-        end if;
-    end process;
-    
-end architecture behavioral;
+
+end architecture behavior;
