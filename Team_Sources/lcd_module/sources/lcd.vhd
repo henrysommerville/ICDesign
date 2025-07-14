@@ -257,6 +257,8 @@ begin
                         buffer_index := buffer_index + 1;
                         lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, COLON);
                         buffer_index := buffer_index + 1;
+                        lcd_buffer(buffer_index) <= format_cmd(SET_ADDRESS_PREFIX, DATE_VALUE_ADDR);
+                        buffer_index := buffer_index + 1;
                         
                         -- Day of week abbreviation
                         case td_dow(2 downto 0) is
@@ -543,16 +545,15 @@ begin
                                 init_done := true;
                         end case;
                         cmd_counter := cmd_counter + 1;
-                    end if;
-                    current_cmd := prev_cmd;
-                    internal_en := '0';
-                    if read_index < lcd_buffer_cnt then
+                    elsif read_index < lcd_buffer_cnt then
                         current_state <= ST_SEND;
                     elsif read_index_sw < lcd_buffer_cnt_sw then
                         current_state <= ST_SEND_SW;
                     else
                         current_state <= ST_WAIT;
                     end if;
+                    current_cmd := prev_cmd;
+                    internal_en := '0';
                 when ST_WAIT =>
                     if en_10 = '1' then
                         read_index := 0;
