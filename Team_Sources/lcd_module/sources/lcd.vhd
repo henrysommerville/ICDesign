@@ -447,9 +447,11 @@ begin
         variable read_index_sw : integer range 0 to MAX_BUFFER-1 := 0;
         variable current_cmd : std_logic_vector(9 downto 0) := (others => '0');
         variable prev_cmd : std_logic_vector(9 downto 0) := (others => '0');
+        variable prev_mode : std_logic_vector(1 downto 0) := (others => '0');
         variable internal_counter : integer := 0;
         variable cmd_counter : integer := 0;
         variable init_done : boolean := false;
+        variable sw_lock : boolean := false;
         variable internal_en : std_logic := '1';
     begin
         if reset = '1' then
@@ -465,7 +467,9 @@ begin
             lcd_data_sg <= (others => '0');
             current_cmd := (others => '0');
             prev_cmd := (others => '0');
+            prev_mode := (others => '0');
             init_done := false;
+            sw_lock := false;
             internal_en := '1';
             cmd_counter := 0;
         elsif rising_edge(clk) then
@@ -558,7 +562,11 @@ begin
                 when ST_WAIT =>
                     if en_10 = '1' then
                         read_index := 0;
-                        current_state <= ST_CLEAR;
+                        if prev_mode /= mode then
+                            current_state <= ST_CLEAR;
+                        else
+                            current_state <= ST_SEND;
+                        end if;
                     elsif en_100 = '1' and mode = "11" then
                         read_index_sw := 0;
                         current_state <= ST_SEND_SW;
@@ -578,13 +586,19 @@ begin
                         current_state <= ST_WAIT;
                     end if;
                 when ST_SEND_SW =>
-                    if read_index_sw < lcd_buffer_cnt_sw then
-                        current_cmd := lcd_buffer_sw(read_index_sw);
-                        prev_cmd := lcd_buffer_sw(read_index_sw);
-                        read_index_sw := read_index_sw + 1;
+                    if sw_lock = false then
+                        if read_index_sw < lcd_buffer_cnt_sw then
+                            current_cmd := lcd_buffer_sw(read_index_sw);
+                            prev_cmd := lcd_buffer_sw(read_index_sw);
+                            read_index_sw := read_index_sw + 1;
+                            current_state <= ST_SEND_SW;
+                            sw_lock := true;
+                        else
+                            current_state <= ST_WAIT;
+                    else 
+                        current_cmd := prev_cmd;
+                        sw_lock := false;
                         current_state <= ST_EN_LOW;
-                    else
-                        current_state <= ST_WAIT;
                     end if;
                 when others =>
                     null;  -- No other states defined
