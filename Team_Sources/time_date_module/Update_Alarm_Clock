@@ -1,0 +1,149 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity alarm_clock_tb is
+end alarm_clock_tb;
+
+architecture testbench of alarm_clock_tb is
+
+    -- Clock period
+    constant CLK_PERIOD : time := 10 ns;
+
+    -- DUT Signals
+    signal clk             : std_logic := '0';
+    signal reset           : std_logic := '0';
+    signal clk_1hz         : std_logic := '0';
+    
+    signal mode_key        : std_logic := '0';
+    signal plus_key        : std_logic := '0';
+    signal minus_key       : std_logic := '0';
+    signal action_key      : std_logic := '0';
+    signal curr_hour       : std_logic_vector(7 downto 0) := "00000000";  
+    signal curr_min        : std_logic_vector(7 downto 0) := "00000000"; 
+
+    signal alarm_hour      : std_logic_vector(4 downto 0);
+    signal alarm_min       : std_logic_vector(5 downto 0);
+    signal Alarm_act       : std_logic;
+    signal Alarm_snooze    : std_logic;
+    signal Alarm_ring      : std_logic;
+    signal led_alarm_act   : std_logic;
+    signal led_alarm_ring  : std_logic;
+
+    -- Clock generators
+    signal tick_1hz_counter : integer := 0;
+    signal tick_2hz_counter : integer := 0;
+
+begin
+
+    -- Instantiate the alarm clock
+    uut: entity work.alarm_clock
+        port map (
+            clk             => clk,
+            reset           => reset,
+            clk_1hz         => clk_1hz,
+
+            mode_key        => mode_key,
+            plus_key        => plus_key,
+            minus_key       => minus_key,
+            action_key      => action_key,
+            curr_hour       => curr_hour,
+            curr_min        => curr_min,
+            alarm_hour      => alarm_hour,
+            alarm_min       => alarm_min,
+            Alarm_act       => Alarm_act,
+            Alarm_snooze    => Alarm_snooze,
+            Alarm_ring      => Alarm_ring,
+            led_alarm_act   => led_alarm_act,
+            led_alarm_ring  => led_alarm_ring
+        );
+
+    clk_process : process
+    begin
+        while now < 5 ms loop
+            clk <= not clk;
+            wait for CLK_PERIOD / 2;
+        end loop;
+        wait;
+    end process;
+
+  
+    hz_gen : process(clk)
+    begin
+        if rising_edge(clk) then
+            tick_1hz_counter <= tick_1hz_counter + 1;
+            tick_2hz_counter <= tick_2hz_counter + 1;
+
+            if tick_1hz_counter = 50 then
+                clk_1hz <= '1';
+                tick_1hz_counter <= 0;
+            else
+                clk_1hz <= '0';
+            end if;
+
+        
+            
+        end if;
+    end process;
+
+    -- Stimulus
+    stim_proc : process
+    begin
+       
+        reset <= '1';
+        wait for 50 ns;
+        reset <= '0';
+
+       
+        wait for 200 ns;
+
+        curr_hour <= "00000000"; 
+        curr_min  <= "00011111"; 
+       
+        mode_key <= '1';
+        wait for 100 ns;
+        mode_key <= '0';
+        wait for 1 us;
+        mode_key <= '1';
+        wait for 100 ns;
+        mode_key <= '0';
+
+        
+        wait for 1 us;
+        plus_key <= '1';
+        wait for 200 ns;
+        plus_key <= '0';
+
+       
+        wait for 500 ns;
+        action_key <= '1';
+        wait for 200 ns;
+        action_key <= '0';
+
+      
+        wait for 100 us;
+        mode_key <= '1';
+        wait for 200 ns;
+        mode_key <= '0';
+
+       
+        wait for 200 us;
+        curr_min <= "00100000"; 
+
+        
+        wait for 200 us;
+        action_key <= '1';
+        wait for 10 ns;
+        action_key <= '0';
+
+       
+        wait for 200 us;
+
+        action_key <= '1';
+        wait for 50 ns; 
+        action_key <= '0';
+
+        wait;
+    end process;
+
+end testbench;
