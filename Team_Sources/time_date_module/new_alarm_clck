@@ -1,0 +1,214 @@
+----------------------------------------------------------------------------------
+-- Company:TUM 
+-- Engineer: Johinur Liton
+-- 
+-- Create Date:    12:51:04 07/01/2025 
+-- Design Name: 
+-- Module Name:    Alarm - Behavioral 
+-- Project Name: 
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
+--
+-- Dependencies: 
+--
+-- Revision: 
+-- Revision 0.01 - File Created
+-- Additional Comments: 
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+use work.bcd_package.ALL;
+
+entity alarm_clock is
+    Port (
+        clk             : in  std_logic;
+        reset           : in  std_logic;
+        clk_1hz         : in  std_logic;
+        mode_key        : in  std_logic;
+        plus_key        : in  std_logic;
+        minus_key       : in  std_logic;
+        action_key      : in  std_logic;
+
+      
+        curr_hour       : in  std_logic_vector(7 downto 0);  
+        curr_min        : in  std_logic_vector(7 downto 0); 
+
+        -- Alarm outputs
+        alarm_hour      : out std_logic_vector(4 downto 0);
+        alarm_min       : out std_logic_vector(5 downto 0);
+        Alarm_act       : out std_logic;
+        Alarm_snooze    : out std_logic;
+        Alarm_ring      : out std_logic;
+        led_alarm_act   : out std_logic;
+        led_alarm_ring  : out std_logic
+    );
+end alarm_clock;
+
+architecture Behavioral of alarm_clock is
+
+    type state_type is (IDLE, SET_ALARM);
+    signal state : state_type := IDLE;
+
+    signal clock_hour    : integer range 0 to 23 := 0;
+    signal clock_min     : integer range 0 to 59 := 16;
+
+    signal active        : std_logic := '0';
+    signal ringing       : std_logic := '0';
+    signal snooze        : std_logic := '0';
+
+    signal snooze_timer  : integer range 0 to 59 := 0;
+    signal ring_timer    : integer range 0 to 59 := 0;
+
+    signal mode_timer    : integer range 0 to 3 := 0;
+    signal mode_counter  : integer := 0;
+
+    signal action_duration : integer := 0;
+    signal action_previous : std_logic := '0';
+
+    --  BCD to integer
+    function bcd_to_integer(bcd : std_logic_vector(7 downto 0)) return integer is
+        variable tens : integer;
+        variable ones : integer;
+    begin
+        tens := to_integer(unsigned(bcd(7 downto 4)));
+        ones := to_integer(unsigned(bcd(3 downto 0)));
+        return (tens * 10) + ones;
+    end function;
+
+begin
+
+    process(clk)
+        variable curr_hour_int : integer;
+        variable curr_min_int  : integer;
+    begin
+        if rising_edge(clk) then
+            if reset = '1' then
+                
+                clock_hour <= 0;
+                clock_min <= 16;
+                active <= '0';
+                ringing <= '0';
+                snooze <= '0';
+                snooze_timer <= 0;
+                ring_timer <= 0;
+                state <= IDLE;
+                mode_timer <= 0;
+                mode_counter <= 0;
+                action_duration <= 0;
+
+            else
+               
+                curr_hour_int := bcd_to_integer(curr_hour);
+                curr_min_int  := bcd_to_integer(curr_min);
+
+                if mode_key = '1' then
+                    if mode_counter = 0 then
+                        mode_counter <= 1;
+                        mode_timer <= 3;
+                    elsif mode_counter = 1 then
+                        state <= SET_ALARM;
+                        mode_counter <= 0;
+                    end if;
+                end if;
+
+                
+                if clk_1hz = '1' and mode_timer > 0 then
+                    mode_timer <= mode_timer - 1;
+                    if mode_timer = 1 then
+                        mode_counter <= 0;
+                    end if;
+                end if;
+
+                
+                if state = SET_ALARM then
+                    if plus_key = '1' then
+                        if clock_min = 59 then
+                            clock_min <= 0;
+                            if clock_hour = 23 then
+                                clock_hour <= 0;
+                            else
+                                clock_hour <= clock_hour + 1;
+                            end if;
+                        else
+                            clock_min <= clock_min + 1;
+                        end if;
+                    elsif minus_key = '1' then
+                        if clock_min = 0 then
+                            clock_min <= 59;
+                            if clock_hour = 0 then
+                                clock_hour <= 23;
+                            else
+                                clock_hour <= clock_hour - 1;
+                            end if;
+                        else
+                            clock_min <= clock_min - 1;
+                        end if;
+                    end if;
+
+                    if action_key = '1' and action_previous = '0' then
+                        active <= not active;
+                    end if;
+
+                    if mode_key = '1' then
+                        state <= IDLE;
+                    end if;
+                end if;
+
+             
+                if action_key = '1' then
+                    action_duration <= action_duration + 1;
+                else
+                    action_duration <= 0;
+                end if;
+                action_previous <= action_key;
+
+               
+                if curr_hour_int = clock_hour and curr_min_int = clock_min and active = '1' and snooze = '0' then
+                    ringing <= '1';
+                    ring_timer <= 0;
+                end if;
+
+                
+                if ringing = '1' then
+                    if action_key = '1' and action_duration < 2 then
+                        snooze <= '1';
+                        snooze_timer <= 59;
+                        ringing <= '0';
+                    elsif action_key = '1' and action_duration >= 2 then
+                        ringing <= '0';
+                    elsif clk_1hz = '1' then
+                        ring_timer <= ring_timer + 1;
+                        if ring_timer >= 59 then
+                            ringing <= '0';
+                        end if;
+                    end if;
+                end if;
+
+               
+                if snooze = '1' and clk_1hz = '1' then
+                    if snooze_timer > 0 then
+                        snooze_timer <= snooze_timer - 1;
+                    else
+                        snooze <= '0';
+                        ringing <= '1';
+                        ring_timer <= 0;
+                    end if;
+                end if;
+
+            end if;
+        end if;
+    end process;
+
+    -- Output 
+    alarm_hour      <= std_logic_vector(to_unsigned(clock_hour, 5));
+    alarm_min       <= std_logic_vector(to_unsigned(clock_min, 6));
+    Alarm_act       <= active;
+    Alarm_ring      <= ringing;
+    Alarm_snooze    <= snooze;
+    led_alarm_act   <= active;
+    led_alarm_ring  <= ringing;
+
+end Behavioral;
