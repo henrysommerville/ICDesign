@@ -562,11 +562,7 @@ begin
                 when ST_WAIT =>
                     if en_10 = '1' then
                         read_index := 0;
-                        if prev_mode /= mode then
-                            current_state <= ST_CLEAR;
-                        else
-                            current_state <= ST_SEND;
-                        end if;
+                        current_state <= ST_SEND;
                     elsif en_100 = '1' and mode = "11" then
                         read_index_sw := 0;
                         current_state <= ST_SEND_SW;
