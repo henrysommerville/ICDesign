@@ -20,8 +20,7 @@
     <Option Name="TargetLanguage" Val="VHDL"/>
     <Option Name="SimulatorLanguage" Val="VHDL"/>
     <Option Name="BoardPart" Val=""/>
-    <Option Name="SourceMgmtMode" Val="DisplayOnly"/>
-    <Option Name="ActiveSimSet" Val="sim_1"/>
+    <Option Name="ActiveSimSet" Val="time_date_sim"/>
     <Option Name="DefaultLib" Val="xil_defaultlib"/>
     <Option Name="ProjectType" Val="Default"/>
     <Option Name="IPOutputRepo" Val="$PCACHEDIR/ip"/>
@@ -34,7 +33,7 @@
     <Option Name="EnableBDX" Val="FALSE"/>
     <Option Name="DSAVendor" Val="xilinx"/>
     <Option Name="DSANumComputeUnits" Val="60"/>
-    <Option Name="WTXSimLaunchSim" Val="0"/>
+    <Option Name="WTXSimLaunchSim" Val="15"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -69,41 +68,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../Team_Sources/stopwatch_module/sources/stopwatch_top.vhd">
-        <FileInfo>
-          <Attr Name="Library" Val="MFclock"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../Team_Sources/stopwatch_module/sources/stopwatch_fsm.vhd">
-        <FileInfo>
-          <Attr Name="Library" Val="MFclock"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../Team_Sources/stopwatch_module/sources/stopwatch_lap_reg.vhd">
-        <FileInfo>
-          <Attr Name="Library" Val="MFclock"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../Team_Sources/stopwatch_module/sources/stopwatch_bcd_encoder.vhd">
-        <FileInfo>
-          <Attr Name="Library" Val="MFclock"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../Team_Sources/stopwatch_module/sources/stopwatch_counter.vhd">
-        <FileInfo>
-          <Attr Name="Library" Val="MFclock"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PPRDIR/../clock_gen.vhd">
         <FileInfo>
           <Attr Name="Library" Val="MFclock"/>
@@ -126,6 +90,55 @@
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../../Team_Sources/time_date_module/sources/time_date_module.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="MFclock"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../Team_Sources/stopwatch_module/sources/stopwatch_fsm.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="MFclock"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../Team_Sources/stopwatch_module/sources/stopwatch_bcd_encoder.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="MFclock"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../Team_Sources/stopwatch_module/sources/stopwatch_counter.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="MFclock"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../Team_Sources/stopwatch_module/sources/stopwatch_lap_reg.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="MFclock"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../Team_Sources/stopwatch_module/sources/stopwatch_top.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="MFclock"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../Team_Sources/lcd_module/sources/lcd.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="MFclock"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../Team_Sources/global_fsm_module/sources/global_fsm.vhd">
         <FileInfo>
           <Attr Name="Library" Val="MFclock"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -181,27 +194,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../Team_Sources/lcd_module/sources/lcd_tb.vhd">
-        <FileInfo>
-          <Attr Name="Library" Val="MFclock"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../Team_Sources/lcd_module/sources/lcd.vhd">
-        <FileInfo>
-          <Attr Name="Library" Val="MFclock"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../Team_Sources/global_fsm_module/sources/global_fsm.vhd">
-        <FileInfo>
-          <Attr Name="Library" Val="MFclock"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="hardware"/>
@@ -247,45 +239,50 @@
       </File>
       <File Path="$PPRDIR/../../Team_Sources/time_date_module/simulations/testbench_roll_over_with_reset_synch.vhd">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../../Team_Sources/time_date_module/simulations/testbench_roll_over_standard.vhd">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../../Team_Sources/time_date_module/simulations/testbench_roll_over_leap_year.vhd">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../../Team_Sources/time_date_module/simulations/testbench_dcf_show.vhd">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../../Team_Sources/time_date_module/simulations/testbench_reset_synch.vhd">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../../Team_Sources/time_date_module/simulations/testbench_sec_accuracy.vhd">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="stopwatch_top"/>
-        <Option Name="TopLib" Val="MFclock"/>
-        <Option Name="TopAutoSet" Val="TRUE"/>
+        <Option Name="TopModule" Val="testbench_date_mode"/>
+        <Option Name="TopLib" Val="xil_defaultlib"/>
         <Option Name="TransportPathDelay" Val="0"/>
         <Option Name="TransportIntDelay" Val="0"/>
         <Option Name="SrcSet" Val="sources_1"/>
@@ -295,7 +292,7 @@
       <Filter Type="Srcs"/>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="stopwatch_top"/>
+        <Option Name="TopModule" Val="hardware"/>
         <Option Name="TopLib" Val="MFclock"/>
         <Option Name="TopAutoSet" Val="TRUE"/>
         <Option Name="TransportPathDelay" Val="0"/>
@@ -305,9 +302,28 @@
     </FileSet>
     <FileSet Name="global_fsm_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/global_fsm_sim">
       <Filter Type="Srcs"/>
+      <File Path="$PPRDIR/../../Team_Sources/global_fsm_module/sources/global_fsm_tb.vhd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="stopwatch_top"/>
+        <Option Name="TopModule" Val="tb_global_fsm"/>
+        <Option Name="TopLib" Val="xil_defaultlib"/>
+        <Option Name="TransportPathDelay" Val="0"/>
+        <Option Name="TransportIntDelay" Val="0"/>
+        <Option Name="SrcSet" Val="sources_1"/>
+        <Option Name="xsim.simulate.runtime" Val="100ms"/>
+        <Option Name="xsim.simulate.log_all_signals" Val="true"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="lcd_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/lcd_sim">
+      <Filter Type="Srcs"/>
+      <Config>
+        <Option Name="DesignMode" Val="RTL"/>
+        <Option Name="TopModule" Val="hardware"/>
         <Option Name="TopLib" Val="MFclock"/>
         <Option Name="TopAutoSet" Val="TRUE"/>
         <Option Name="TransportPathDelay" Val="0"/>
@@ -315,16 +331,25 @@
         <Option Name="SrcSet" Val="sources_1"/>
       </Config>
     </FileSet>
-    <FileSet Name="lcd_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/lcd_sim">
+    <FileSet Name="hardware_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/hardware_sim">
       <Filter Type="Srcs"/>
+      <File Path="$PSRCDIR/hardware_sim/new/time_date_function_check_testbench.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="stopwatch_top"/>
+        <Option Name="TopModule" Val="hardware"/>
         <Option Name="TopLib" Val="MFclock"/>
         <Option Name="TopAutoSet" Val="TRUE"/>
         <Option Name="TransportPathDelay" Val="0"/>
         <Option Name="TransportIntDelay" Val="0"/>
         <Option Name="SrcSet" Val="sources_1"/>
+        <Option Name="xsim.simulate.runtime" Val="100ms"/>
+        <Option Name="xsim.simulate.log_all_signals" Val="true"/>
       </Config>
     </FileSet>
   </FileSets>

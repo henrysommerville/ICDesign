@@ -156,16 +156,16 @@ begin
                                     
                                     leap_year <= check_leap_year(internal_year);
                                     even_month <= (internal_month(0) = '0');
-                                    below_august <=(unsigned(internal_month) < unsigned(bcd_8));
+                                    below_august <= (unsigned(internal_month(3 downto 0)) < to_unsigned(8, 4)) and (internal_month(7 downto 4) = "0000");
                                     is_februar  <= (internal_month = bcd_2);
                                                     
                                     if
-                                        (below_august and not even_month and (internal_day = bcd_31)) or
-                                        (not below_august and even_month and (internal_day = bcd_31)) or
-                                        (not below_august and not even_month and (internal_day = bcd_30)) or
-                                        (below_august and even_month and not is_februar and (internal_day = bcd_30)) or
-                                        (is_februar and not leap_year and (internal_day = bcd_28)) or
-                                        (is_februar and leap_year and (internal_day = bcd_29))
+                                        ((below_august and (not even_month) and (internal_day = bcd_31)) or
+                                        ((not below_august) and even_month and (internal_day = bcd_31)) or
+                                        ((not below_august) and (not even_month) and (internal_day = bcd_30)) or
+                                        (below_august and even_month and (not is_februar) and (internal_day = bcd_30)) or
+                                        (is_februar and leap_year and (internal_day = bcd_28)) or
+                                        (is_februar and (not leap_year) and (internal_day = bcd_29)))
                                         then 
                                         internal_day <= bcd_1;
                                         
