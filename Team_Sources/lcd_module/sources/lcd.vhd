@@ -595,6 +595,7 @@ begin
                             sw_lock := true;
                         else
                             current_state <= ST_WAIT;
+                        end if;
                     else 
                         current_cmd := prev_cmd;
                         sw_lock := false;

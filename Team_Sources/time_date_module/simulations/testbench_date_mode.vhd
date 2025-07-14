@@ -19,9 +19,10 @@
 
 
 library IEEE;
+library MFclock;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
-use work.bcd_package.ALL;
+use MFclock.bcd_package.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -63,7 +64,7 @@ signal stop_time:time;
 
 begin
 
-dut : entity work.time_date_module
+dut : entity MFclock.time_date_module
     PORT MAP(
             de_dow => de_dow,
             de_day => de_day,
