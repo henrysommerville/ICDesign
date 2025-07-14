@@ -546,6 +546,7 @@ begin
                         end case;
                         cmd_counter := cmd_counter + 1;
                     elsif read_index < lcd_buffer_cnt then
+                        internal_counter := CLEAR_WAIT_CYCLES;
                         current_state <= ST_SEND;
                     elsif read_index_sw < lcd_buffer_cnt_sw then
                         current_state <= ST_SEND_SW;
@@ -557,7 +558,7 @@ begin
                 when ST_WAIT =>
                     if en_10 = '1' then
                         read_index := 0;
-                        current_state <= ST_SEND;
+                        current_state <= ST_CLEAR;
                     elsif en_100 = '1' and mode = "11" then
                         read_index_sw := 0;
                         current_state <= ST_SEND_SW;
@@ -565,7 +566,9 @@ begin
                     current_cmd := (others => '0');
                     internal_en := '1';
                 when ST_SEND =>
-                    if read_index < lcd_buffer_cnt then
+                    if internal_counter > 0 then
+                        internal_counter := internal_counter - 1;
+                    elsif read_index < lcd_buffer_cnt then
                         current_cmd := lcd_buffer(read_index);
                         prev_cmd := lcd_buffer(read_index);
                         read_index := read_index + 1;
