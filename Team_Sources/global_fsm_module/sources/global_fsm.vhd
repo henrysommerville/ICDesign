@@ -134,9 +134,9 @@ begin
                 next_state <= S1_SWRST;
             end if;
         when ALARM_S1 =>
-            if (key_plus_minus = '1' or key_plus_impulse = '1') then
+            if (key_plus_minus = '1' and key_plus_impulse = '1') then
                 next_state <= ALARM_INC;
-            elsif (key_plus_minus = '0' or key_minus_impulse = '0') then
+            elsif (key_plus_minus = '0' and key_minus_impulse = '1') then
                 next_state <= ALARM_DEC;
             elsif (key_action_impulse = '1' and alarm_ring = '1') then
                 next_state <= AALR_SNOOZE;
