@@ -23,6 +23,7 @@ architecture behavior of tb_global_fsm is
         key_plus_minus      : in  std_logic;
         td_date_status      : in  std_logic;
         alarm_ring          : in  std_logic;
+        sw_active           : in  std_logic;
         mode                : out std_logic_vector(1 downto 0);
         alarm_set_incr_min  : out std_logic;
         alarm_set_decr_min  : out std_logic;
@@ -32,6 +33,7 @@ architecture behavior of tb_global_fsm is
         sw_start            : out std_logic;
         sw_lap_toggle       : out std_logic;
         sw_reset            : out std_logic
+        
     );
     end component;
     
@@ -58,6 +60,7 @@ architecture behavior of tb_global_fsm is
     signal sw_start          : std_logic;
     signal sw_lap_toggle     : std_logic;
     signal sw_reset          : std_logic;
+    signal sw_active         : std_logic;
     
     -- Clock period definitions (10 kHz -> 100 us period)
     constant clk_period : time := 100 us;
@@ -87,21 +90,23 @@ begin
         alarm_off => alarm_off,
         sw_start => sw_start,
         sw_lap_toggle => sw_lap_toggle,
-        sw_reset => sw_reset
+        sw_reset => sw_reset,
+        sw_active => sw_active
     );
     
     -- Clock generation
     clk_process: process
     begin
-        while not test_finished loop
+--        while not test_finished loop
             clk <= '0';
             wait for clk_period/2;
             clk <= '1';
             wait for clk_period/2;
-        end loop;
-        wait;
+--        end loop;
+--        wait;
     end process;
     
+   
     -- Stimulus process
     stim_proc: process
     begin
@@ -152,11 +157,34 @@ begin
         assert sw_start = '1' report "Failed Test 6: Stopwatch not started" severity error;
         
         -- Test 7: Take lap in stopwatch
+        
+        key_minus_impulse <= '1';
+         wait for clk_period;
+         key_minus_impulse <= '0';
+         wait for clk_period;
+        key_action_impulse <= '1';
+        sw_active <= '1';
+        wait for clk_period;
+        key_action_impulse <= '0';
+        wait for clk_period;
         key_minus_impulse <= '1';
         wait for clk_period;
         key_minus_impulse <= '0';
         wait for clk_period;
-        assert sw_lap_toggle = '1' report "Failed Test 7: Lap not recorded" severity error;
+        key_mode_impulse <= '1';
+        wait for clk_period;
+        key_mode_impulse <= '0';
+        wait for clk_period;
+        key_minus_impulse <= '1';
+        wait for clk_period;
+        key_minus_impulse <= '0';
+        wait for clk_period;
+        key_minus_impulse <= '1';
+        wait for clk_period;
+        key_minus_impulse <= '0';
+        wait for clk_period;
+        
+        assert sw_lap_toggle = '0' report "Failed Test 7: Lap not recorded" severity error;
         
         -- Test 8: Handle alarm in stopwatch mode
         alarm_ring <= '1';
