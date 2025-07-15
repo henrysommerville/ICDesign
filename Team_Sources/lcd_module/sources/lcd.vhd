@@ -292,8 +292,8 @@ begin
 
                         -----------------------------
                         
-                        lcd_buffer_sw(buffer_index_sw) <= format_cmd(SET_ADDRESS_PREFIX, SW_TIME_ADDR);
-                        buffer_index_sw := buffer_index_sw + 1;
+                        lcd_buffer(buffer_index) <= format_cmd(SET_ADDRESS_PREFIX, SW_TIME_ADDR);
+                        buffer_index := buffer_index + 1;
                         lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, BLANK_SPACE);
                         buffer_index := buffer_index + 1;
                         lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, BLANK_SPACE);
