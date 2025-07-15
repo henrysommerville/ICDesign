@@ -19,12 +19,10 @@
 
 
 library IEEE;
+library MFclock;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
-use work.bcd_package.ALL;
-use ieee.std_logic_textio.all;  -- optional for textio
-use std.textio.all;
-
+use MFclock.bcd_package.ALL;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -64,7 +62,7 @@ signal temp_bcd : STD_LOGIC_VECTOR (7 downto 0);
 
 begin
 
-dut : entity work.time_date_module
+dut : entity MFclock.time_date_module
     PORT MAP(
             de_dow => de_dow,
             de_day => de_day,
@@ -181,6 +179,7 @@ stim : process
         de_set<= '0';
         wait for 61 sec;
             
+        assert false report "Simulation finished successfully." severity failure;
     end process;
 check : process
     begin
@@ -210,7 +209,7 @@ check : process
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert temp_bcd = td_hour and td_min = bcd_0
+        assert temp_bcd = td_hour and td_min = bcd_0 and td_sec = bcd_0
             report "hour to late" 
             severity error;
             
@@ -225,7 +224,7 @@ check : process
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert temp_bcd = td_dow and td_hour = bcd_0
+        assert temp_bcd = td_dow and td_hour = bcd_0 and td_min = bcd_0 and td_sec = bcd_0
             report "dow to late" 
             severity error;
             
@@ -240,11 +239,10 @@ check : process
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert temp_bcd = td_day and td_hour = bcd_0
+        assert temp_bcd = td_day and td_hour = bcd_0 and td_min = bcd_0 and td_sec = bcd_0
             report "day to late" 
             severity error;
             
-
         -- month
         wait until falling_edge(de_set);
         wait until falling_edge(clk_10k);
@@ -256,7 +254,7 @@ check : process
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert temp_bcd = td_month and td_day = bcd_1
+        assert temp_bcd = td_month and td_day = bcd_1 and td_hour = bcd_0 and td_min = bcd_0 and td_sec = bcd_0
             report "month to late" 
             severity error;
             
@@ -271,7 +269,7 @@ check : process
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert temp_bcd = td_year and td_month = bcd_1
+        assert temp_bcd = td_year and td_month = bcd_1 and td_day = bcd_1 and td_hour = bcd_0 and td_min = bcd_0 and td_sec = bcd_0
             report "year to late" 
             severity error;
             
@@ -286,11 +284,10 @@ check : process
         wait for 1 sec;
         temp_bcd <= increment_bcd(temp_bcd);
         wait until falling_edge(clk_10k);
-        assert bcd_1  = td_year and td_month = bcd_1
+        assert bcd_1  = td_year and td_month = bcd_1 and td_day = bcd_1 and td_hour = bcd_0 and td_min = bcd_0 and td_sec = bcd_0
             report "century to late" 
             severity error;
-       
-        wait until rising_edge(clk_10k);
+        
         assert false report "Simulation finished successfully." severity failure;
 end process;
 

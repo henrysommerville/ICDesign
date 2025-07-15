@@ -19,9 +19,10 @@
 
 
 library IEEE;
+library MFclock;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
-use work.bcd_package.ALL;
+use MFclock.bcd_package.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -63,7 +64,7 @@ signal stop_time:time;
 
 begin
 
-dut : entity work.time_date_module
+dut : entity MFclock.time_date_module
     PORT MAP(
             de_dow => de_dow,
             de_day => de_day,
@@ -105,8 +106,9 @@ stim : process
         reset <= '1';
         wait until rising_edge(clk_10k);
         reset <= '0';
-        wait for 10 sec;
+        wait for 1 sec;
     end process;
+    
 check : process
     begin
         wait until rising_edge(de_set);
@@ -134,6 +136,7 @@ check : process
         report "Delta Time after reset: " & time'image(stop_time - start_time);
             
         wait until rising_edge(clk_10k);
+        
         assert false report "Simulation finished successfully." severity failure;
 end process;
 

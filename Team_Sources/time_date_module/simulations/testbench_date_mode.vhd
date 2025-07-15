@@ -98,14 +98,14 @@ clk : process
 stim : process
     begin
         wait until rising_edge(clk_10k);
-        mode_date <= '1';
+        mode <= "01";
         wait until rising_edge(clk_10k);
-        mode_date <= '0';
+        mode <= "00";
         wait for 500us;
         wait until rising_edge(clk_10k);
-        mode_date <= '1';
+        mode <= "01";
         wait until rising_edge(clk_10k);
-        mode_date <= '0';
+        mode <= "00";
         wait for 10 sec;
     end process;
 check : process
