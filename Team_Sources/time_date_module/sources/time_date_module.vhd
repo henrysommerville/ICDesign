@@ -41,7 +41,7 @@ entity time_date_module is
         de_year : in  STD_LOGIC_VECTOR (7 downto 0);
         de_hour : in  STD_LOGIC_VECTOR (5 downto 0);
         de_min : in  STD_LOGIC_VECTOR (6 downto 0);
-        mode : in STD_LOGIC_VECTOR (1 downto 0);
+        mode : in STD_LOGIC_VECTOR (2 downto 0);
         reset : in  STD_LOGIC;
         clk_10K : in STD_LOGIC;
         td_dcf_show: out STD_LOGIC;
