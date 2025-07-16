@@ -689,10 +689,10 @@ begin
                             lcd_buffer(buffer_index) <= format_cmd(SET_ADDRESS_PREFIX, SW_TIME_ADDR);
                             buffer_index := buffer_index + 1;
                             if ts_select = '0' then
-                                lcd_buffer(buffer_index) <= format_cmd(SET_ADDRESS_PREFIX, BLANK_SPACE);
+                                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, BLANK_SPACE);
                                 buffer_index := buffer_index + 1;
                             else
-                                lcd_buffer(buffer_index) <= format_cmd(SET_ADDRESS_PREFIX, ASTERISK);
+                                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, ASTERISK);
                                 buffer_index := buffer_index + 1;
                             end if;
                             buffer_index := buffer_index + 1;
