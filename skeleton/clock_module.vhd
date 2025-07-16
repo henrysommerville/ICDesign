@@ -71,7 +71,7 @@ end clock_module;
 architecture Behavioral of clock_module is
 
 	    -- global FSM
-    signal mode                 : STD_LOGIC_VECTOR (1 downto 0) := (others => '0');
+    signal mode                 : STD_LOGIC_VECTOR (2 downto 0) := (others => '0');
 	signal alarm_set_incr_min   : STD_LOGIC := '0';
 	signal alarm_set_decr_min   : STD_LOGIC  := '0';
 	signal alarm_toggle_active  : STD_LOGIC  := '0';
@@ -107,6 +107,21 @@ architecture Behavioral of clock_module is
     signal alarm_snooze         : STD_LOGIC := '0';
     signal alarm_hour           : std_logic_vector(7 downto 0) := "00000000";
     signal alarm_min            : std_logic_vector(7 downto 0) := "00000000";
+    
+            -- Time switch inputs
+        signal ts_hour_off  : std_logic_vector(7 downto 0) := "00010111";
+        signal ts_min_off  :  std_logic_vector(7 downto 0)  := "00110000";
+        signal ts_sec_off  :  std_logic_vector(7 downto 0)  := "00000000";
+        signal ts_hour_on  :  std_logic_vector(7 downto 0)  := "00001000";
+        signal ts_min_on   :  std_logic_vector(7 downto 0)  := "00010101";
+        signal ts_sec_on   :  std_logic_vector(7 downto 0)  := "00000000";
+        signal ts_on       :  std_logic := '0';
+        signal ts_select   : std_logic := '0';
+        -- Countdown inputs
+        signal cd_hour      :  std_logic_vector(7 downto 0) := "00000001";
+        signal cd_min       :  std_logic_vector(7 downto 0) := "00010101";
+        signal cd_sec       :  std_logic_vector(7 downto 0) := "00000000";
+        signal cd_on        :  std_logic := '0';
                         
 begin
 	
@@ -198,7 +213,21 @@ begin
                     lcd_en          => lcd_en,
                     lcd_rw          => lcd_rw,
                     lcd_rs          => lcd_rs,
-                    lcd_data        => lcd_data
+                    lcd_data        => lcd_data,
+                    
+                    ts_hour_off => ts_hour_off,
+                    ts_min_off  => ts_min_off,
+                    ts_sec_off  => ts_sec_off,
+                    ts_hour_on  => ts_hour_on,
+                    ts_min_on   => ts_min_on,
+                    ts_sec_on   => ts_sec_on,
+                    ts_on       => ts_on,
+                    ts_select   => ts_select,
+        -- Countdown inputs
+                    cd_hour     => cd_hour,
+                    cd_min      => cd_min,
+                    cd_sec      => cd_sec,
+                    cd_on       => cd_on
         );
 
 	 -- Global FSM Module
@@ -228,7 +257,8 @@ begin
 	sw_start           =>  sw_start, 
 	sw_lap_toggle      =>  sw_lap_toggle, 
 	sw_reset           =>  sw_reset,
-	sw_active          =>  o_sw_active
+	sw_active          =>  o_sw_active,
+	ts_select          => ts_select
 		);
 end Behavioral;
 
