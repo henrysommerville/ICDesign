@@ -33,7 +33,7 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity time_date_counter_date is
     PORT(
-        mode: in STD_LOGIC_VECTOR(1 downto 0);
+        mode: in STD_LOGIC_VECTOR(2 downto 0);
         clk_10K : in STD_LOGIC;
         reset : in STD_LOGIC;
         td_date_status: out STD_LOGIC
@@ -53,7 +53,7 @@ begin
     process(clk_10k)
     begin
         if rising_edge(clk_10k) then
-            if (reset = '1' and reset_prev = '0') or not (mode = "01") then
+            if reset = '1' and reset_prev = '0' then
                 internal_date_counter_active <= '0';
                 internal_date_counter <= to_unsigned(1,internal_date_counter'length);
             elsif internal_date_counter_active = '1' then
@@ -64,7 +64,7 @@ begin
                     internal_date_counter <= internal_date_counter + 1;
                 end if;
                 
-            elsif mode = "01" and internal_date_counter_active = '0' then
+            elsif mode = "001" and internal_date_counter_active = '0' then
                 internal_date_counter_active <= '1';
             end if;
             reset_prev <= reset;
