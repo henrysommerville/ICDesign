@@ -53,7 +53,7 @@ begin
     process(clk_10k)
     begin
         if rising_edge(clk_10k) then
-            if reset = '1' and reset_prev = '0' then
+            if (reset = '1' and reset_prev = '0') or not (mode = "01") then
                 internal_date_counter_active <= '0';
                 internal_date_counter <= to_unsigned(1,internal_date_counter'length);
             elsif internal_date_counter_active = '1' then
