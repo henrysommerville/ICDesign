@@ -21,7 +21,7 @@ td_date_status
 alarm_ring          : in  std_logic;
 sw_active           : in std_logic;
 
-        mode         : out std_logic_vector(1 downto 0);
+        mode         : out std_logic_vector(2 downto 0);
 alarm_set_incr_min  : out std_logic;
 alarm_set_decr_min  : out std_logic;
 alarm_toggle_active : out std_logic;
@@ -29,7 +29,9 @@ alarm_snoozed       : out std_logic;
 alarm_off           : out std_logic; 
 sw_start            : out std_logic;
 sw_lap_toggle       : out std_logic;
-sw_reset            : out std_logic
+sw_reset            : out std_logic;
+
+ts_select           : out std_logic
 
 );
 end global_fsm;
@@ -40,10 +42,11 @@ type state_type is ( NORMAL, DATE, STOPWATCH_S1, RESET_ST,
 DALR_SNOOZE, DALR_OFF, ALARM_S1, NALR_SNOOZE, NALR_OFF,
 SW_STRT, SW_PAUSE, SALR_SNOOZE, SALR_OFF, S1_SWRST,
 ALARM_INC, ALARM_DEC, ALARM_SWITCH, AALR_SNOOZE, AALR_OFF,
-SW_LAP, SWALR_SNOOZE, SWALR_OFF, INTSW_RST );
+SW_LAP, SWALR_SNOOZE, SWALR_OFF, INTSW_RST,
+TIME_SWITCH_ON, TIME_SWITCH_OFF, COUNTDOWN );
 
 signal current_state, next_state : state_type;
-signal mode_reg                        : std_logic_vector(1 downto 0);
+signal mode_reg                        : std_logic_vector(2 downto 0); -- 100 countdown 101 
 signal alarm_set_incr_min_reg         : std_logic := '0';
 signal alarm_set_decr_min_reg         : std_logic := '0';
 signal alarm_toggle_active_reg        : std_logic := '0';
@@ -54,6 +57,7 @@ signal sw_lap_toggle_reg              : std_logic := '0';
 signal sw_reset_reg                   : std_logic := '0';
 signal td_date_status_reg             : std_logic := '0';
 signal falling_edge_detected          : std_logic;
+signal skip_modes_reg                 : std_logic;
 
 begin
 
@@ -152,6 +156,22 @@ begin
             elsif key_action_long = '1' then
                 next_state <= AALR_OFF;
             elsif key_mode_impulse = '1' then
+                if skip_modes_reg = '1' then
+                    next_state <= NORMAL;
+                else 
+                    next_state <= TIME_SWITCH_ON;
+                end if;
+            end if;
+        when TIME_SWITCH_ON =>
+            if key_mode_impulse = '1' then
+                next_state <= TIME_SWITCH_OFF;
+            end if;
+        when TIME_SWITCH_OFF =>
+            if key_mode_impulse = '1' then
+                next_state <= COUNTDOWN;
+            end if;
+        when COUNTDOWN =>
+            if key_mode_impulse = '1' then
                 next_state <= NORMAL;
             end if;
         when SW_STRT =>
@@ -162,7 +182,9 @@ begin
             elsif (key_action_impulse = '1' and alarm_ring = '1') then
                 next_state <= SWALR_SNOOZE;
             elsif key_action_impulse = '1' then
-                next_state <= SW_PAUSE;
+                if sw_lap_toggle_reg = '0' then
+                    next_state <= SW_PAUSE;
+                end if;
             elsif key_action_long = '1' then
                 next_state <= SWALR_OFF;
             elsif key_plus_impulse = '1' then
@@ -201,6 +223,7 @@ begin
             sw_start_reg <= '0';
             sw_lap_toggle_reg <= '0';
             sw_reset_reg <= '0';
+            skip_modes_reg <= '0';
         else
             -- Default retention behavior unless overwritten
             alarm_set_incr_min_reg <= '0';
@@ -208,13 +231,16 @@ begin
             sw_reset_reg <= '0';
             alarm_snoozed_reg <= '0';
             alarm_off_reg     <= '0';
+            skip_modes_reg <= skip_modes_reg;
 
 -- altered output logic a bit
             case current_state is
-                when NORMAL => mode_reg <= "00";
-                when DATE => mode_reg <= "01";
-                when STOPWATCH_S1 => mode_reg <= "11";
-                when ALARM_S1 => mode_reg <= "10";
+                when NORMAL => 
+                    mode_reg <= "000";
+                    skip_modes_reg <= '0';
+                when DATE => mode_reg <= "001";
+                when STOPWATCH_S1 => mode_reg <= "011";
+                when ALARM_S1 => mode_reg <= "010";
 
                 when DALR_SNOOZE | NALR_SNOOZE | AALR_SNOOZE | SALR_SNOOZE | SWALR_SNOOZE =>
                     alarm_snoozed_reg <= '1';
@@ -222,18 +248,31 @@ begin
                 when DALR_OFF | NALR_OFF | AALR_OFF | SALR_OFF | SWALR_OFF =>
                     alarm_off_reg <= '1';
 
-                when ALARM_INC => alarm_set_incr_min_reg <= '1';
-                when ALARM_DEC => alarm_set_decr_min_reg <= '1';
+                when ALARM_INC => 
+                    alarm_set_incr_min_reg <= '1';
+                    skip_modes_reg <= '1';
+                when ALARM_DEC => 
+                    alarm_set_decr_min_reg <= '1';
+                    skip_modes_reg <= '1';
                 when ALARM_SWITCH => alarm_toggle_active_reg <= not alarm_toggle_active_reg;
                 when SW_STRT => 
                     sw_start_reg <= '1';
-                    mode_reg <= "11";
+                    mode_reg <= "011";
                 when SW_PAUSE => sw_start_reg <= '0';
                 when S1_SWRST | INTSW_RST =>
                     sw_reset_reg <= '1';
                     sw_start_reg <= '0';
                     sw_lap_toggle_reg <= '0';
                 when SW_LAP => sw_lap_toggle_reg <= not sw_lap_toggle_reg;
+                when TIME_SWITCH_ON =>
+                    mode_reg <= "101";
+                    ts_select <= '0';
+                when TIME_SWITCH_OFF =>
+                    mode_reg <= "101";
+                    ts_select <= '1';
+                when COUNTDOWN =>
+                    mode_reg <= "100";
+                    
                 when others => null;
             end case;
         end if;
@@ -241,6 +280,3 @@ begin
 end process;
 
 end Behavioral;
-
-
-
