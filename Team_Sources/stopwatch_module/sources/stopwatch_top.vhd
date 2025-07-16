@@ -51,7 +51,8 @@ entity stopwatch_top is
         o_sw_time_s       : out STD_LOGIC_VECTOR(7 downto 0); -- Time to display in seconds (BCD format)
         o_sw_time_min     : out STD_LOGIC_VECTOR(7 downto 0); -- Time to display in mins (BCD format)
         o_sw_time_h       : out STD_LOGIC_VECTOR(7 downto 0); -- Time to display in hours (BCD format)
-        o_sw_lap          : out STD_LOGIC                     -- Lap time toggle
+        o_sw_lap          : out STD_LOGIC;                    -- Lap time toggle
+        o_sw_active       : out STD_LOGIC                     -- output to global fsm
     );
 
 end stopwatch_top;
@@ -135,6 +136,7 @@ begin
     o_sw_time_min<= sc_lap_time_min when sm_lap_toggle = '1' else sc_time_min;
     o_sw_time_h  <= sc_lap_time_h   when sm_lap_toggle = '1' else sc_time_h;
     o_sw_lap     <= sm_lap_toggle;
+    o_sw_active <= sm_counter_active;
         
 
 

@@ -19,6 +19,7 @@ key_plus_minus      : in  std_logic;
 td_date_status
     : in  std_logic;
 alarm_ring          : in  std_logic;
+sw_active           : in std_logic;
 
         mode         : out std_logic_vector(1 downto 0);
 alarm_set_incr_min  : out std_logic;
@@ -29,6 +30,7 @@ alarm_off           : out std_logic;
 sw_start            : out std_logic;
 sw_lap_toggle       : out std_logic;
 sw_reset            : out std_logic
+
 );
 end global_fsm;
 
@@ -64,6 +66,7 @@ alarm_off <= alarm_off_reg;
 sw_start <= sw_start_reg;
 sw_lap_toggle <= sw_lap_toggle_reg;
 sw_reset <= sw_reset_reg;
+
 
 -- Falling edge detection
 process(clk)
@@ -104,6 +107,8 @@ begin
                 next_state <= NALR_SNOOZE;
             elsif key_action_long = '1' then
                 next_state <= NALR_OFF;
+            elsif (sw_active = '1'  and (key_plus_impulse = '1' or key_minus_impulse = '1')) then
+                next_state <= SW_STRT;
             elsif (key_plus_impulse = '1' or key_minus_impulse = '1') then
                 next_state <= STOPWATCH_S1;
             end if;
@@ -128,6 +133,8 @@ begin
                 next_state <= SALR_SNOOZE;
             elsif key_action_impulse = '1' then
                 next_state <= SW_STRT;
+            elsif key_mode_impulse = '1' then
+                next_state <= NORMAL;
             elsif key_action_long = '1' then
                 next_state <= SALR_OFF;
             elsif key_plus_impulse = '1' then
@@ -218,7 +225,9 @@ begin
                 when ALARM_INC => alarm_set_incr_min_reg <= '1';
                 when ALARM_DEC => alarm_set_decr_min_reg <= '1';
                 when ALARM_SWITCH => alarm_toggle_active_reg <= not alarm_toggle_active_reg;
-                when SW_STRT => sw_start_reg <= '1';
+                when SW_STRT => 
+                    sw_start_reg <= '1';
+                    mode_reg <= "11";
                 when SW_PAUSE => sw_start_reg <= '0';
                 when S1_SWRST | INTSW_RST =>
                     sw_reset_reg <= '1';
