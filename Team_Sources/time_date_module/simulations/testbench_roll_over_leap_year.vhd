@@ -23,7 +23,7 @@ library MFclock;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 use MFclock.bcd_package.ALL;
-use ieee.std_logic_textio.all;  -- optional for textio
+use ieee.std_logic_textio.all;
 use std.textio.all;
 
 
@@ -60,11 +60,8 @@ function int_to_bcd(i : integer) return std_logic_vector is
     variable ones    : integer;
     variable bcd     : std_logic_vector(7 downto 0);
 begin
-    -- split into tens and ones
     tens := i / 10;
     ones := i mod 10;
-
-    -- assign BCD (tens in upper nibble, ones in lower nibble)
     bcd(7 downto 4) := std_logic_vector(to_unsigned(tens, 4));
     bcd(3 downto 0) := std_logic_vector(to_unsigned(ones, 4));
     return bcd;

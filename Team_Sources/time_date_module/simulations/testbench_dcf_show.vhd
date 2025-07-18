@@ -24,14 +24,6 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 use MFclock.bcd_package.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
 
 entity testbench_dcf_show is
 --  Port ( );
@@ -109,8 +101,9 @@ stim : process
         wait until rising_edge(clk_10k);
         reset <= '0';
         de_set <= '0';
-        wait for 61 sec;
+        wait for 62 sec;
         
+        assert false report "Simulation finished successfully." severity failure;
     end process;
 check : process
     begin
@@ -142,7 +135,6 @@ check : process
         report "Delta Time: " & time'image(stop_time - start_time);
             
         wait until rising_edge(clk_10k);
-        assert false report "Simulation finished successfully." severity failure;
 end process;
 
 
