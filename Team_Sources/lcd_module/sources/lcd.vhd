@@ -228,40 +228,41 @@ begin
                 buffer_index := buffer_index + 1;
                 lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, LETTER_S_may);
                 buffer_index := buffer_index + 1;
-                
-                -- Time display (shown in all modes)
-                lcd_buffer(buffer_index) <= format_cmd(SET_ADDRESS_PREFIX, TIME_ADDR);
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, LETTER_T_may);
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, LETTER_i);
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, LETTER_m);
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, LETTER_e);
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, COLON);
-                buffer_index := buffer_index + 1;
-                
-                -- Time value (HH:MM:SS)
-                lcd_buffer(buffer_index) <= format_cmd(SET_ADDRESS_PREFIX, TIME_HOUR_ADDR);
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_hour(7 downto 4));
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_hour(3 downto 0));
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, COLON);
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_min(7 downto 4));
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_min(3 downto 0));
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, COLON);
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_sec(7 downto 4));
-                buffer_index := buffer_index + 1;
-                lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_sec(3 downto 0));
-                buffer_index := buffer_index + 1;
+                if mode /="101" then
+                    -- Time display (shown in all modes)
+                    lcd_buffer(buffer_index) <= format_cmd(SET_ADDRESS_PREFIX, TIME_ADDR);
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, LETTER_T_may);
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, LETTER_i);
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, LETTER_m);
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, LETTER_e);
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, COLON);
+                    buffer_index := buffer_index + 1;
+                    
+                    -- Time value (HH:MM:SS)
+                    lcd_buffer(buffer_index) <= format_cmd(SET_ADDRESS_PREFIX, TIME_HOUR_ADDR);
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_hour(7 downto 4));
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_hour(3 downto 0));
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, COLON);
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_min(7 downto 4));
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_min(3 downto 0));
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, COLON);
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_sec(7 downto 4));
+                    buffer_index := buffer_index + 1;
+                    lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & td_sec(3 downto 0));
+                    buffer_index := buffer_index + 1;
+                end if;
                 
                 -- DCF reception indicator
                 lcd_buffer(buffer_index) <= format_cmd(SET_ADDRESS_PREFIX, DCF_ADDR);
@@ -596,15 +597,15 @@ begin
                         buffer_index := buffer_index + 1;
                         lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & cd_hour(3 downto 0));
                         buffer_index := buffer_index + 1;
-                        lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, BLANK_SPACE);
+                        lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, COLON);
                         buffer_index := buffer_index + 1;
                         lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & cd_min(7 downto 4));
                         buffer_index := buffer_index + 1;
                         lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & cd_min(3 downto 0));
                         buffer_index := buffer_index + 1;
-                        lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, BLANK_SPACE);
+                        lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, COLON);
                         buffer_index := buffer_index + 1;
-                        lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & cd_sec(7 downto 3));
+                        lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & cd_sec(7 downto 4));
                         buffer_index := buffer_index + 1;
                         lcd_buffer(buffer_index) <= format_cmd(WRITE_DATA_PREFIX, NUMBER_PREFIX & cd_sec(3 downto 0));
                         buffer_index := buffer_index + 1;
