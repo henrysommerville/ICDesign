@@ -47,7 +47,7 @@ signal de_month : STD_LOGIC_VECTOR (4 downto 0):= "00011";
 signal de_year : STD_LOGIC_VECTOR (7 downto 0):= "00000011";
 signal de_hour :  STD_LOGIC_VECTOR (5 downto 0):= "000010";
 signal de_min :  STD_LOGIC_VECTOR (6 downto 0):= "0000111";
-signal mode: STD_LOGIC_VECTOR (1 downto 0) := "00";
+signal mode: STD_LOGIC_VECTOR (2 downto 0) := "000";
 signal clk_10K : STD_LOGIC := '0';
 signal td_dcf_show: STD_LOGIC;
 signal td_dow : STD_LOGIC_VECTOR (7 downto 0);

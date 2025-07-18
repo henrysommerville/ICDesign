@@ -4,7 +4,7 @@
 -- 
 -- Create Date: 06/17/2025 11:41:50 PM
 -- Design Name: 
--- Module Name: time_date_counter_date - Behavioral
+-- Module Name: time_date_DateModeTimer - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
@@ -31,16 +31,16 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity time_date_counter_date is
+entity time_date_DateModeTimer is
     PORT(
         mode: in STD_LOGIC_VECTOR(2 downto 0);
         clk_10K : in STD_LOGIC;
         reset : in STD_LOGIC;
         td_date_status: out STD_LOGIC
     );
-end time_date_counter_date;
+end time_date_DateModeTimer;
 
-architecture Behavioral of time_date_counter_date is
+architecture Behavioral of time_date_DateModeTimer is
 
 
 signal internal_date_counter : unsigned(14 downto 0) := to_unsigned(1,15);

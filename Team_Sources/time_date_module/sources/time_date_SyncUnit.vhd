@@ -4,7 +4,7 @@
 -- 
 -- Create Date: 06/15/2025 09:50:15 PM
 -- Design Name: 
--- Module Name: time_date_output - Behavioral
+-- Module Name: time_date_SyncUnit - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
@@ -34,7 +34,7 @@ use work.bcd_package.ALL;
 
 
 
-entity time_date_output is
+entity time_date_SyncUnit is
     PORT(
         de_dow : in  STD_LOGIC_VECTOR (2 downto 0);
         de_day : in STD_LOGIC_VECTOR (5 downto 0);
@@ -54,10 +54,10 @@ entity time_date_output is
         td_min : out  STD_LOGIC_VECTOR (7 downto 0);
         td_sec : out  STD_LOGIC_VECTOR (7 downto 0)
     );
-end time_date_output;
+end time_date_SyncUnit;
 
 
-architecture Behavioral of time_date_output is
+architecture Behavioral of time_date_SyncUnit is
 
 function check_leap_year ( year : in STD_LOGIC_VECTOR(7 downto 0))
     return boolean is 

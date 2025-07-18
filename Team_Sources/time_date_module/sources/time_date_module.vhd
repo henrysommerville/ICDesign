@@ -61,7 +61,7 @@ architecture Behavioral of time_date_module is
 
 begin
 
-date_output : entity work.time_date_output
+syncunit : entity work.time_date_SyncUnit
      PORT MAP(
         de_dow => de_dow,
         de_day => de_day,
@@ -82,7 +82,7 @@ date_output : entity work.time_date_output
         td_sec => td_sec
     );
 
-counter_date : entity work.time_date_counter_date
+datemodetimer : entity work.time_date_DateModeTimer
     PORT MAP(
         reset => reset,
         mode => mode,

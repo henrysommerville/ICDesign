@@ -47,7 +47,7 @@ signal de_month : STD_LOGIC_VECTOR (4 downto 0):= "00001";
 signal de_year : STD_LOGIC_VECTOR (7 downto 0):= "00000001";
 signal de_hour :  STD_LOGIC_VECTOR (5 downto 0):= "000000";
 signal de_min :  STD_LOGIC_VECTOR (6 downto 0):= "0000000";
-signal mode: STD_LOGIC_VECTOR (1 downto 0) := "00";
+signal mode: STD_LOGIC_VECTOR (2 downto 0) := "000";
 signal clk_10K : STD_LOGIC := '0';
 signal td_dcf_show: STD_LOGIC;
 signal td_dow : STD_LOGIC_VECTOR (7 downto 0);
@@ -98,15 +98,11 @@ clk : process
 stim : process
     begin
         wait until rising_edge(clk_10k);
-        mode <= "01";
+        mode <= "001";
+        wait for 4 sec;
         wait until rising_edge(clk_10k);
-        mode <= "00";
-        wait for 500us;
-        wait until rising_edge(clk_10k);
-        mode <= "01";
-        wait until rising_edge(clk_10k);
-        mode <= "00";
-        wait for 10 sec;
+        mode <= "000";
+        wait for 1 sec;
     end process;
 check : process
     begin

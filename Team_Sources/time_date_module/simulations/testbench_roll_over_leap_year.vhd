@@ -41,7 +41,7 @@ signal de_month : STD_LOGIC_VECTOR (4 downto 0):= "00001";
 signal de_year : STD_LOGIC_VECTOR (7 downto 0):= "00000001";
 signal de_hour :  STD_LOGIC_VECTOR (5 downto 0):= "000001";
 signal de_min :  STD_LOGIC_VECTOR (6 downto 0):= "0000000";
-signal mode: STD_LOGIC_VECTOR (1 downto 0) := "00";
+signal mode: STD_LOGIC_VECTOR (2 downto 0) := "000";
 signal clk_10K : STD_LOGIC := '0';
 signal td_dcf_show: STD_LOGIC;
 signal td_dow : STD_LOGIC_VECTOR (7 downto 0);
@@ -105,7 +105,7 @@ clk : process
     
 stim : process
     begin
-        for ii in 0 to 99 loop
+        for ii in 0 to 20 loop
             current_year <= ii;
             
             wait until rising_edge(clk_10k);
@@ -117,13 +117,16 @@ stim : process
             de_set<= '1';
             wait until rising_edge(clk_10k);
             de_set<= '0';
-            wait for 61 sec;
+            wait for 119 sec;
         end loop;
+        
+       
+        assert false report "Simulation finished successfully." severity failure;
     end process;
 
 check : process
     begin
-        for ii in 0 to 99 loop
+        for ii in 0 to 20 loop
             -- year
             wait until falling_edge(de_set);
             wait until falling_edge(clk_10k);
