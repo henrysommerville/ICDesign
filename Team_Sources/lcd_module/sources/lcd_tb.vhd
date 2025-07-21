@@ -21,7 +21,7 @@ architecture behavior of lcd_tb is
             reset        : in std_logic;
             en_100       : in std_logic;
             en_10        : in std_logic;
-            mode         : in std_logic_vector(1 downto 0);
+            mode         : in std_logic_vector(2 downto 0);
             td_hour      : in std_logic_vector(7 downto 0);
             td_min       : in std_logic_vector(7 downto 0);
             td_sec       : in std_logic_vector(7 downto 0);
@@ -54,7 +54,7 @@ architecture behavior of lcd_tb is
     signal reset        : std_logic := '1';
     signal en_100       : std_logic := '0';
     signal en_10        : std_logic := '0';
-    signal mode         : std_logic_vector(1 downto 0) := "00";
+    signal mode         : std_logic_vector(2 downto 0) := "000";
     signal td_hour      : std_logic_vector(7 downto 0) := x"14";
     signal td_min       : std_logic_vector(7 downto 0) := x"35";
     signal td_sec       : std_logic_vector(7 downto 0) := x"42";
@@ -166,30 +166,28 @@ begin
         wait for 10 us;
         
         -- Test Mode 00 (Time)
-        mode <= "00";
+        mode <= "000";
         wait for 200 us;
         
         -- Test Mode 01 (Date)
-        mode <= "01";
+        mode <= "001";
         wait for 200 us;
         
         -- Test Mode 10 (Alarm)
-        mode <= "10";
+        mode <= "010";
         wait for 200 us;
         
         -- Test Mode 11 (Stopwatch)
-        mode <= "11";
+        mode <= "011";
         wait for 200 us;
-        
-        -- Cycle through modes again
-        mode <= "00";
-        wait for 100 us;
-        mode <= "01";
-        wait for 100 us;
-        mode <= "10";
-        wait for 100 us;
-        mode <= "11";
-        wait for 100 us;
+
+        -- Test Mode 
+        mode <= "100";
+        wait for 200 us;
+
+        -- Test Mode 
+        mode <= "101";
+        wait for 200 us;
         
         -- Test some signal variations
         td_dcf_show <= '0';
