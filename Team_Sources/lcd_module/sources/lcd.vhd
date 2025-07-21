@@ -18,7 +18,7 @@ entity lcd is
         en_10    : in std_logic;   -- 10Hz enable pulse
 
         -- Mode selection
-        mode         : in std_logic_vector(2 downto 0);  -- 00:Time, 01:Date, 10:Alarm, 11:Stopwatch
+        mode         : in std_logic_vector(2 downto 0);
         
         -- Time inputs
         td_hour      : in std_logic_vector(7 downto 0);
