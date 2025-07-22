@@ -57,7 +57,7 @@ signal sw_lap_toggle_reg              : std_logic := '0';
 signal sw_reset_reg                   : std_logic := '0';
 signal td_date_status_reg             : std_logic := '0';
 signal falling_edge_detected          : std_logic;
-signal skip_modes_reg                 : std_logic;
+signal skip_modes_reg                 : std_logic := '0';
 
 begin
 
@@ -184,6 +184,8 @@ begin
             elsif key_action_impulse = '1' then
                 if sw_lap_toggle_reg = '0' then
                     next_state <= SW_PAUSE;
+                else
+                    next_state <= current_state;
                 end if;
             elsif key_action_long = '1' then
                 next_state <= SWALR_OFF;
